@@ -41,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Meta />
 				<Links />
 			</head>
-			<body className="bg-body text-body-foreground">
+			<body className="bg-body text-body-foreground selection:bg-primary selection:text-primary-foreground">
 				<Header />
 				{children}
 				<Footer />
@@ -73,11 +73,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	}
 
 	return (
-		<main className="pt-16 p-4 container mx-auto">
+		<main className="container mx-auto p-4 pt-16">
 			<h1>{message}</h1>
 			<p>{details}</p>
 			{stack && (
-				<pre className="w-full p-4 overflow-x-auto">
+				<pre className="w-full overflow-x-auto p-4">
 					<code>{stack}</code>
 				</pre>
 			)}
@@ -87,11 +87,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
 function Header() {
 	return (
-		<header className="border-b border-border bg-card px-6 py-6 text-card-foreground sm:px-12">
+		<header className="border-border border-b bg-card px-6 py-6 text-card-foreground sm:px-12">
 			<div className="flex justify-center">
 				<Link
 					to="/"
-					className="max-w-1/2 font-display text-2xl font-medium uppercase tracking-widest sm:text-3xl"
+					className="max-w-1/2 font-display font-medium text-2xl uppercase tracking-widest sm:text-3xl"
 				>
 					<div>Providence</div>
 					<div>Job Board</div>
@@ -110,13 +110,13 @@ function Footer() {
 
 	return (
 		<footer
-			className="bg-footer text-footer-foreground selection:!bg-footer-foreground selection:!text-footer"
+			className="selection:!bg-footer-foreground selection:!text-footer bg-footer text-footer-foreground"
 			aria-labelledby="footer-heading"
 		>
 			<h2 id="footer-heading" className="sr-only">
 				Footer
 			</h2>
-			<div className="mx-auto max-w-7xl px-6 pb-8 pt-16 lg:px-8">
+			<div className="mx-auto max-w-7xl px-6 pt-16 pb-8 lg:px-8">
 				<div className="md:grid md:grid-cols-2 md:gap-8">
 					<div className="space-y-8">
 						<Link to="/" aria-label="Home" className="max-w-min">
@@ -127,7 +127,7 @@ function Footer() {
 								alt="Providence Church Logo"
 							/>
 						</Link>
-						<p className="max-w-96 text-sm leading-6 text-footer-foreground">
+						<p className="max-w-96 text-footer-foreground text-sm leading-6">
 							The Providence job board exists as a networking platform for job
 							seekers to connect with employers within the Providence Church
 							community.
@@ -139,7 +139,7 @@ function Footer() {
 								<li key={item.name}>
 									<Link
 										to={item.href}
-										className="font-display text-lg font-bold uppercase leading-6 tracking-widest text-footer-foreground transition-colors hover:text-footer-foreground/60"
+										className="font-bold font-display text-footer-foreground text-lg uppercase leading-6 tracking-widest transition-colors hover:text-footer-foreground/60"
 									>
 										{item.name}
 									</Link>
@@ -150,7 +150,7 @@ function Footer() {
 									href="https://providenceaustin.com/"
 									target="_blank"
 									rel="noreferrer"
-									className="font-display text-lg font-bold uppercase leading-6 tracking-widest text-footer-foreground transition-colors hover:text-footer-foreground/60"
+									className="font-bold font-display text-footer-foreground text-lg uppercase leading-6 tracking-widest transition-colors hover:text-footer-foreground/60"
 								>
 									Providence Website
 								</a>
@@ -158,11 +158,11 @@ function Footer() {
 						</ul>
 					</div>
 				</div>
-				<div className="mt-16 flex flex-col justify-between space-y-6 border-t border-white/10 pt-8 md:flex-row md:space-y-0">
+				<div className="mt-16 flex flex-col justify-between space-y-6 border-white/10 border-t pt-8 md:flex-row md:space-y-0">
 					<p className="text-xs leading-5">
 						&copy; 2024 Providence Church. All rights reserved.
 					</p>
-					<p className="max-w-96 text-xs leading-5 text-muted-foreground">
+					<p className="max-w-96 text-muted-foreground text-xs leading-5">
 						Experiencing an issue? Email{" "}
 						<a
 							href="mailto:josh@longhorndesign.studio"
