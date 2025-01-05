@@ -12,7 +12,7 @@ import { Label } from "~/components/ui/label"
 
 export default function Register() {
 	return (
-		<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24">
+		<div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-sm">
 				<Card className="max-w-xl">
 					<CardHeader>

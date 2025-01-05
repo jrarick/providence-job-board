@@ -26,6 +26,16 @@
 				"noConsoleLog": "warn",
 				"noEmptyBlockStatements": "warn",
 				"noSkippedTests": "error"
+			},
+			"nursery": {
+				"useSortedClasses": {
+					"level": "warn",
+					"fix": "safe",
+					"options": {
+						"attributes": ["className"],
+						"functions": ["cn", "clsx", "cva"]
+					}
+				}
 			}
 		}
 	},
