@@ -24,12 +24,6 @@ npm install
 
 ### Development
 
-Run an initial database migration:
-
-```bash
-npm run db:migrate
-```
-
 Start the development server with HMR:
 
 ```bash
@@ -48,25 +42,7 @@ npm run build
 
 ## Deployment
 
-Deployment is done using the Wrangler CLI.
-
-To deploy directly to production:
-
-```sh
-npx wrangler deploy
-```
-
-To deploy a preview URL:
-
-```sh
-npx wrangler versions upload
-```
-
-You can then promote a version to production after verification or roll it out progressively.
-
-```sh
-npx wrangler versions deploy
-```
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjacob-ebey%2Freact-router-templates%2Ftree%2Fmain%2Fvercel&project-name=my-react-router-app&repository-name=my-react-router-app)
 
 ## Styling
 

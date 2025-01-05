@@ -4,7 +4,7 @@ import {
 	useForm,
 } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
-import { Form } from "react-router"
+import { Form, redirect } from "react-router"
 import { Button } from "~/components/ui/button"
 import {
 	Card,
@@ -18,13 +18,15 @@ import { Label } from "~/components/ui/label"
 import { registerSchema } from "~/schemas/register"
 import type { Route } from "./+types/register"
 
-export async function action({ request, context }: Route.ActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
 	const formData = await request.formData()
 	const submission = parseWithZod(formData, { schema: registerSchema })
 
 	if (submission.status !== "success") {
 		return { lastResult: submission.reply() }
 	}
+
+	return redirect("/")
 }
 
 export default function Register({ actionData }: Route.ComponentProps) {

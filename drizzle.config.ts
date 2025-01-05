@@ -1,15 +1,14 @@
-import type { Config } from "drizzle-kit"
+import { defineConfig } from "drizzle-kit"
 
-export default {
+if (!process.env.DATABASE_URL) {
+	throw new Error("DATABASE_URL is required")
+}
+
+export default defineConfig({
 	out: "./drizzle",
 	schema: "./database/schema.ts",
-	dialect: "sqlite",
-	driver: "d1-http",
+	dialect: "postgresql",
 	dbCredentials: {
-		databaseId: "your-database-id",
-		// biome-ignore lint/style/noNonNullAssertion: envs require non-null assertions
-		accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
-		// biome-ignore lint/style/noNonNullAssertion: envs require non-null assertions
-		token: process.env.CLOUDFLARE_TOKEN!,
+		url: process.env.DATABASE_URL,
 	},
-} satisfies Config
+})
