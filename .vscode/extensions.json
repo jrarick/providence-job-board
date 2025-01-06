@@ -1,0 +1,8 @@
+{
+	"recommendations": [
+		"biomejs.biome",
+		"bradlc.vscode-tailwindcss",
+		"neotan.vscode-auto-restart-typescript-eslint-servers",
+		"yoavbls.pretty-ts-errors"
+	]
+}

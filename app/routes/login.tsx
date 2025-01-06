@@ -1,6 +1,7 @@
 import { getInputProps, useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
 import { Form, Link, redirect } from "react-router"
+import Container from "~/components/shell/container"
 import { Button } from "~/components/ui/button"
 import {
 	Card,
@@ -12,8 +13,8 @@ import {
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { createClient } from "~/db/supabase.server"
-import { registerSchema } from "~/schemas/register"
-import type { Route } from "./+types/register"
+import { loginSchema } from "~/schemas/login"
+import type { Route } from "./+types/login"
 
 export async function loader({ request }: Route.LoaderArgs) {
 	const { supabase, headers } = createClient(request)
@@ -31,7 +32,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
 	const formData = await request.formData()
-	const submission = parseWithZod(formData, { schema: registerSchema })
+	const submission = parseWithZod(formData, { schema: loginSchema })
 
 	if (submission.status !== "success") {
 		return { lastResult: submission.reply() }
@@ -40,23 +41,23 @@ export async function action({ request }: Route.ActionArgs) {
 	return redirect("/")
 }
 
-export default function Register({ actionData }: Route.ComponentProps) {
+export default function Login({ actionData }: Route.ComponentProps) {
 	const [form, fields] = useForm({
 		lastResult: actionData?.lastResult,
 		onValidate({ formData }) {
-			return parseWithZod(formData, { schema: registerSchema })
+			return parseWithZod(formData, { schema: loginSchema })
 		},
 		shouldValidate: "onSubmit",
 		shouldRevalidate: "onInput",
 	})
 
 	return (
-		<div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+		<Container>
 			<div className="mx-auto max-w-sm">
 				<Card className="max-w-xl">
 					<CardHeader>
-						<CardTitle>Register</CardTitle>
-						<CardDescription>Create an account</CardDescription>
+						<CardTitle>Login</CardTitle>
+						<CardDescription>Sign in to your account.</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<Form
@@ -67,37 +68,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
 							noValidate
 						>
 							<div className="space-y-1">
-								<Label htmlFor={fields.firstName.id}>First Name</Label>
-								<Input
-									{...getInputProps(fields.firstName, {
-										type: "text",
-										ariaDescribedBy: fields.firstName.descriptionId,
-									})}
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.firstName.errorId}
-								>
-									{fields.firstName.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.lastName.id}>Last Name</Label>
-								<Input
-									{...getInputProps(fields.lastName, {
-										type: "text",
-										ariaDescribedBy: fields.lastName.descriptionId,
-									})}
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.lastName.errorId}
-								>
-									{fields.lastName.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.email.id}>Email Address</Label>
+								<Label htmlFor={fields.email.id}>Email</Label>
 								<Input
 									{...getInputProps(fields.email, {
 										type: "email",
@@ -126,19 +97,19 @@ export default function Register({ actionData }: Route.ComponentProps) {
 									{fields.password.errors}
 								</div>
 							</div>
-							<Button type="submit">Register</Button>
+							<Button type="submit">Login</Button>
 						</Form>
 						<div className="mt-6 text-right">
 							<Link
-								to="/login"
+								to="/register"
 								className="font-medium text-muted-foreground text-xs underline"
 							>
-								Already have an account?
+								Not registered?
 							</Link>
 						</div>
 					</CardContent>
 				</Card>
 			</div>
-		</div>
+		</Container>
 	)
 }

@@ -5,6 +5,7 @@ const PORT = Number.parseInt(process.env.PORT || "3000")
 const app = express()
 app.disable("x-powered-by")
 
+// biome-ignore lint/suspicious/noConsoleLog: yes
 console.log("Starting development server")
 const viteDevServer = await import("vite").then((vite) =>
 	vite.createServer({
@@ -25,5 +26,6 @@ app.use(async (req, res, next) => {
 })
 
 app.listen(PORT, () => {
+	// biome-ignore lint/suspicious/noConsoleLog: yes
 	console.log(`Server is running on http://localhost:${PORT}`)
 })

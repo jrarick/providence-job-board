@@ -9,7 +9,8 @@
 			"recommended": true,
 			"correctness": {
 				"noEmptyPattern": "off",
-				"useHookAtTopLevel": "error"
+				"useHookAtTopLevel": "error",
+				"noUnusedImports": "warn"
 			},
 			"performance": {
 				"noBarrelFile": "error",
@@ -36,6 +37,9 @@
 						"functions": ["cn", "clsx", "cva"]
 					}
 				}
+			},
+			"complexity": {
+				"noForEach": "off"
 			}
 		}
 	},
