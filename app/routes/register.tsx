@@ -1,6 +1,7 @@
 import { getInputProps, useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
-import { Form, Link, redirect } from "react-router"
+import { LoaderCircleIcon } from "lucide-react"
+import { Form, Link, redirect, useNavigation } from "react-router"
 import { Button } from "~/components/ui/button"
 import {
 	Card,
@@ -37,6 +38,25 @@ export async function action({ request }: Route.ActionArgs) {
 		return { lastResult: submission.reply() }
 	}
 
+	const { supabase, headers } = createClient(request)
+	const origin = headers.get("origin")
+
+	const newUser = await supabase.auth.signUp({
+		email: submission.value.email,
+		password: submission.value.password,
+		options: {
+			data: {
+				emailRedirectTo: `${origin}/auth/callback`,
+				first_name: submission.value.firstName,
+				last_name: submission.value.lastName,
+			},
+		},
+	})
+
+	if (newUser.error) {
+		throw new Error(`Error registering user: ${newUser.error.message}`)
+	}
+
 	return redirect("/")
 }
 
@@ -49,6 +69,10 @@ export default function Register({ actionData }: Route.ComponentProps) {
 		shouldValidate: "onSubmit",
 		shouldRevalidate: "onInput",
 	})
+
+	const navigation = useNavigation()
+
+	const isNotIdle = navigation.state !== "idle"
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
@@ -126,7 +150,16 @@ export default function Register({ actionData }: Route.ComponentProps) {
 									{fields.password.errors}
 								</div>
 							</div>
-							<Button type="submit">Register</Button>
+							<Button type="submit" disabled={isNotIdle}>
+								{isNotIdle ? (
+									<>
+										<LoaderCircleIcon className="animate-spin" />
+										Registering...
+									</>
+								) : (
+									"Register"
+								)}
+							</Button>
 						</Form>
 						<div className="mt-6 text-right">
 							<Link

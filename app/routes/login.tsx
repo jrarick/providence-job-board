@@ -1,6 +1,7 @@
 import { getInputProps, useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
-import { Form, Link, redirect } from "react-router"
+import { LoaderCircleIcon } from "lucide-react"
+import { Form, Link, redirect, useNavigation } from "react-router"
 import Container from "~/components/shell/container"
 import { Button } from "~/components/ui/button"
 import {
@@ -51,6 +52,9 @@ export default function Login({ actionData }: Route.ComponentProps) {
 		shouldRevalidate: "onInput",
 	})
 
+	const navigation = useNavigation()
+	const isNotIdle = navigation.state !== "idle"
+
 	return (
 		<Container>
 			<div className="mx-auto max-w-sm">
@@ -97,7 +101,16 @@ export default function Login({ actionData }: Route.ComponentProps) {
 									{fields.password.errors}
 								</div>
 							</div>
-							<Button type="submit">Login</Button>
+							<Button type="submit" disabled={isNotIdle}>
+								{isNotIdle ? (
+									<>
+										<LoaderCircleIcon className="animate-spin" />
+										Logging In...
+									</>
+								) : (
+									"Login"
+								)}
+							</Button>
 						</Form>
 						<div className="mt-6 text-right">
 							<Link
