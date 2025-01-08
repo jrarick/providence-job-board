@@ -39,14 +39,12 @@ export async function action({ request }: Route.ActionArgs) {
 	}
 
 	const { supabase, headers } = createClient(request)
-	const origin = headers.get("origin")
 
 	const newUser = await supabase.auth.signUp({
 		email: submission.value.email,
 		password: submission.value.password,
 		options: {
 			data: {
-				emailRedirectTo: `${origin}/auth/callback`,
 				first_name: submission.value.firstName,
 				last_name: submission.value.lastName,
 			},
@@ -57,7 +55,7 @@ export async function action({ request }: Route.ActionArgs) {
 		throw new Error(`Error registering user: ${newUser.error.message}`)
 	}
 
-	return redirect("/")
+	return redirect("/", { headers })
 }
 
 export default function Register({ actionData }: Route.ComponentProps) {

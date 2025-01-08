@@ -1,7 +1,9 @@
 import { getInputProps, useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
 import { LoaderCircleIcon } from "lucide-react"
-import { Form, Link, redirect, useNavigation } from "react-router"
+import { useEffect } from "react"
+import { Form, Link, data, redirect, useNavigation } from "react-router"
+import { toast } from "sonner"
 import Container from "~/components/shell/container"
 import { Button } from "~/components/ui/button"
 import {
@@ -36,13 +38,42 @@ export async function action({ request }: Route.ActionArgs) {
 	const submission = parseWithZod(formData, { schema: loginSchema })
 
 	if (submission.status !== "success") {
-		return { lastResult: submission.reply() }
+		return { toastData: null, lastResult: submission.reply() }
 	}
 
-	return redirect("/")
+	const { supabase, headers } = createClient(request)
+
+	const { error } = await supabase.auth.signInWithPassword({
+		email: submission.value.email,
+		password: submission.value.password,
+	})
+
+	if (error) {
+		return data(
+			{
+				toastData: {
+					type: "error",
+					title: "Error signing in",
+					description: "Please check your email and password and try again.",
+				},
+				lastResult: null,
+			},
+			{ headers },
+		)
+	}
+
+	return redirect("/", { headers })
 }
 
 export default function Login({ actionData }: Route.ComponentProps) {
+	useEffect(() => {
+		if (actionData?.toastData) {
+			toast.error("Error signing in", {
+				description: "Please check your email and password and try again.",
+			})
+		}
+	}, [actionData?.toastData])
+
 	const [form, fields] = useForm({
 		lastResult: actionData?.lastResult,
 		onValidate({ formData }) {

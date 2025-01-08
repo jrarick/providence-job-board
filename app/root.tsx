@@ -5,12 +5,19 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	data,
 	isRouteErrorResponse,
+	useRouteLoaderData,
 } from "react-router"
 import providenceIcon from "./assets/providence-icon.svg"
 
 import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
+import { Toaster as Sonner } from "./components/ui/sonner"
+import { createClient } from "./db/supabase.server"
+import { useToast } from "./hooks/toaster"
+import { getToast } from "./lib/toast.server"
+import { combineHeaders } from "./lib/utils"
 
 export const meta: Route.MetaFunction = () => {
 	return [
@@ -32,7 +39,33 @@ export const links: Route.LinksFunction = () => [
 	{ rel: "stylesheet", href: stylesheet },
 ]
 
+export async function loader({ request }: Route.LoaderArgs) {
+	const { supabase, headers: supabaseHeaders } = createClient(request)
+
+	const {
+		data: { user },
+	} = await supabase.auth.getUser()
+
+	const { toast, headers: toastHeaders } = await getToast(request)
+
+	return data(
+		{
+			userName: user
+				? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
+				: null,
+			toast,
+		},
+		{
+			headers: combineHeaders(supabaseHeaders, toastHeaders),
+		},
+	)
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+	const rootLoaderData = useRouteLoaderData("root")
+
+	const userName = rootLoaderData?.userName as string | undefined
+
 	return (
 		<html lang="en">
 			<head>
@@ -42,7 +75,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body className="bg-body text-body-foreground selection:bg-primary selection:text-primary-foreground">
-				<Header />
+				<Header userName={userName} />
 				{children}
 				<Footer />
 				<ScrollRestoration />
@@ -52,8 +85,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	)
 }
 
-export default function App() {
-	return <Outlet />
+export default function App({ loaderData }: Route.ComponentProps) {
+	useToast(loaderData?.toast)
+
+	return (
+		<>
+			<Outlet />
+			<Sonner position="top-center" closeButton={true} />
+		</>
+	)
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -85,7 +125,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	)
 }
 
-function Header() {
+function Header({ userName }: { userName?: string }) {
 	return (
 		<header className="border-border border-b bg-card px-6 py-6 text-card-foreground sm:px-12">
 			<div className="flex justify-center">
@@ -96,6 +136,9 @@ function Header() {
 					<div>Providence</div>
 					<div>Job Board</div>
 				</Link>
+				{userName && (
+					<div className="ml-4 text-primary text-sm">Welcome, {userName}!</div>
+				)}
 			</div>
 		</header>
 	)
@@ -139,7 +182,7 @@ function Footer() {
 								<li key={item.name}>
 									<Link
 										to={item.href}
-										className="font-bold font-display text-footer-foreground text-lg uppercase leading-6 tracking-widest transition-colors hover:text-footer-foreground/60"
+										className="font-bold font-display text-footer-foreground text-lg uppercase leading-6 tracking-widest transition-colors hover:text-footer-foreground/80 active:text-footer-foreground/60"
 									>
 										{item.name}
 									</Link>
@@ -150,7 +193,7 @@ function Footer() {
 									href="https://providenceaustin.com/"
 									target="_blank"
 									rel="noreferrer"
-									className="font-bold font-display text-footer-foreground text-lg uppercase leading-6 tracking-widest transition-colors hover:text-footer-foreground/60"
+									className="font-bold font-display text-footer-foreground text-lg uppercase leading-6 tracking-widest transition-colors hover:text-footer-foreground/80 active:text-footer-foreground/60"
 								>
 									Providence Website
 								</a>

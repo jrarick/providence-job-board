@@ -10,6 +10,7 @@
 	"dependencies": {
 		"@conform-to/react": "^1.2.2",
 		"@conform-to/zod": "^1.2.2",
+		"@paralleldrive/cuid2": "^2.2.2",
 		"@radix-ui/react-label": "^2.1.1",
 		"@radix-ui/react-slot": "^1.1.1",
 		"@react-router/express": "^7.1.1",
@@ -24,11 +25,14 @@
 		"express": "^4.21.1",
 		"isbot": "^5.1.17",
 		"lucide-react": "^0.469.0",
+		"next-themes": "^0.4.4",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-router": "^7.1.1",
+		"sonner": "^1.7.1",
 		"tailwind-merge": "^2.6.0",
-		"tailwindcss-animate": "^1.0.7"
+		"tailwindcss-animate": "^1.0.7",
+		"zod": "^3.24.1"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
