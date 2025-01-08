@@ -13,7 +13,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 			toastOptions={{
 				classNames: {
 					error:
-						"!bg-destructive-faint !text-destructive !border-destructive/40 error-type",
+						"!bg-destructive-foreground !text-destructive !border-destructive/40 error-type",
 					toast:
 						"group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
 					description:

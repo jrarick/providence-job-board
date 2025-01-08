@@ -118,7 +118,17 @@ export default function Login({ actionData }: Route.ComponentProps) {
 								</div>
 							</div>
 							<div className="space-y-1">
-								<Label htmlFor={fields.password.id}>Password</Label>
+								<div className="flex items-center">
+									<Label htmlFor={fields.password.id} className="leading-5">
+										Password
+									</Label>
+									<Link
+										to="/forgot-password"
+										className="ml-auto inline-block font-medium text-muted-foreground text-xs underline underline-offset-4 transition-colors hover:text-primary"
+									>
+										Forgot your password?
+									</Link>
+								</div>
 								<Input
 									{...getInputProps(fields.password, {
 										type: "password",
@@ -146,7 +156,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
 						<div className="mt-6 text-right">
 							<Link
 								to="/register"
-								className="font-medium text-muted-foreground text-xs underline"
+								className="font-medium text-muted-foreground text-xs underline underline-offset-4 transition-colors hover:text-primary"
 							>
 								Not registered?
 							</Link>

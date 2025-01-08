@@ -44,7 +44,6 @@ export default {
 				destructive: {
 					DEFAULT: "hsl(var(--destructive))",
 					foreground: "hsl(var(--destructive-foreground))",
-					faint: "hsl(var(--destructive-faint))",
 				},
 				body: {
 					DEFAULT: "hsl(var(--body))",

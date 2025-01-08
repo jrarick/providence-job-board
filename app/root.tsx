@@ -147,7 +147,7 @@ function Header({ userName }: { userName?: string }) {
 function Footer() {
 	const footerItems = [
 		{ name: "Browse Jobs", href: "/jobs" },
-		{ name: "Advertise Job", href: "/advertise-job" },
+		{ name: "Post A Job", href: "/post-a-job" },
 		{ name: "My Account", href: "/profile" },
 	]
 

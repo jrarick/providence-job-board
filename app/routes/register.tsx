@@ -162,7 +162,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
 						<div className="mt-6 text-right">
 							<Link
 								to="/login"
-								className="font-medium text-muted-foreground text-xs underline"
+								className="font-medium text-muted-foreground text-xs underline underline-offset-4 transition-colors hover:text-primary"
 							>
 								Already have an account?
 							</Link>
