@@ -350,6 +350,12 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 									>
 										<RichTextField meta={fields.description} />
 									</EditorProvider>
+									<div
+										className="pt-1 pl-1 text-destructive text-xs"
+										id={fields.description.errorId}
+									>
+										{fields.description.errors}
+									</div>
 								</div>
 							</div>
 
@@ -363,6 +369,12 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 									>
 										<RichTextField meta={fields.howToApply} />
 									</EditorProvider>
+									<div
+										className="pt-1 pl-1 text-destructive text-xs"
+										id={fields.howToApply.errorId}
+									>
+										{fields.howToApply.errors}
+									</div>
 								</div>
 							</div>
 						</div>
