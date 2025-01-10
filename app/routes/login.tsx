@@ -1,4 +1,4 @@
-import { getInputProps, useForm } from "@conform-to/react"
+import { getFormProps, getInputProps, useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
 import { LoaderCircleIcon } from "lucide-react"
 import { useEffect } from "react"
@@ -98,9 +98,8 @@ export default function Login({ actionData }: Route.ComponentProps) {
 						<Form
 							className="flex flex-col gap-5"
 							method="post"
-							id={form.id}
-							onSubmit={form.onSubmit}
-							noValidate
+							action="/login"
+							{...getFormProps(form)}
 						>
 							<div className="space-y-1">
 								<Label htmlFor={fields.email.id}>Email</Label>

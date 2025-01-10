@@ -1,4 +1,4 @@
-import { getInputProps, useForm } from "@conform-to/react"
+import { getFormProps, getInputProps, useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
 import { LoaderCircleIcon } from "lucide-react"
 import { Form, Link, redirect, useNavigation } from "react-router"
@@ -84,9 +84,8 @@ export default function Register({ actionData }: Route.ComponentProps) {
 						<Form
 							className="flex flex-col gap-5"
 							method="post"
-							id={form.id}
-							onSubmit={form.onSubmit}
-							noValidate
+							action="/register"
+							{...getFormProps(form)}
 						>
 							<div className="space-y-1">
 								<Label htmlFor={fields.firstName.id}>First Name</Label>

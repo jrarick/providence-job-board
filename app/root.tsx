@@ -203,7 +203,8 @@ function Footer() {
 				</div>
 				<div className="mt-16 flex flex-col justify-between space-y-6 border-white/10 border-t pt-8 md:flex-row md:space-y-0">
 					<p className="text-xs leading-5">
-						&copy; 2024 Providence Church. All rights reserved.
+						&copy; {new Date().getFullYear()} Providence Church. All rights
+						reserved.
 					</p>
 					<p className="max-w-96 text-muted-foreground text-xs leading-5">
 						Experiencing an issue? Email{" "}

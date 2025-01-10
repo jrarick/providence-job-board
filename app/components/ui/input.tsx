@@ -1,4 +1,5 @@
 import * as React from "react"
+import CurrencyInput from "react-currency-input-field"
 
 import { cn } from "~/lib/utils"
 
@@ -23,4 +24,21 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
 )
 Input.displayName = "Input"
 
-export { Input }
+const MoneyInput = React.forwardRef<
+	HTMLInputElement,
+	React.ComponentProps<typeof CurrencyInput>
+>(({ className, ...props }, ref) => {
+	return (
+		<CurrencyInput
+			className={cn(
+				"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-foreground shadow-black/5 shadow-sm transition-shadow placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+				className,
+			)}
+			ref={ref}
+			{...props}
+		/>
+	)
+})
+MoneyInput.displayName = "MoneyInput"
+
+export { Input, MoneyInput as CurrencyInput }

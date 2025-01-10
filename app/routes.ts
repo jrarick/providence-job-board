@@ -7,4 +7,5 @@ export default [
 	route("logout", "routes/logout.tsx"),
 	route("jobs", "routes/jobs.tsx"),
 	route("forgot-password", "routes/forgot-password.tsx"),
+	route("post-a-job", "routes/post-a-job.tsx"),
 ] satisfies RouteConfig
