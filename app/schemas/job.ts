@@ -8,9 +8,17 @@ export const jobSchema = z
 	.object({
 		title: z.string({ required_error: "Job Title is required" }),
 		companyName: z.string({ required_error: "Company Name is required" }),
-		category: z.enum(JOB_CATEGORY, {
-			required_error: "Category is required",
-		}),
+		// categories: z.union([
+		// 	z.enum(JOB_CATEGORY),
+		// 	z
+		// 		.array(z.enum(JOB_CATEGORY))
+		// 		.min(1, "At least one category is required")
+		// 		.max(5, "No more than 5 categories are allowed"),
+		// ]),
+		categories: z
+			.array(z.enum(JOB_CATEGORY))
+			.min(1, "At least one category is required")
+			.max(5, "No more than 5 categories are allowed"),
 		employmentType: z.enum(EMPLOYMENT_TYPE, {
 			required_error: "Employment Type is required",
 		}),

@@ -33,6 +33,7 @@ import {
 } from "~/components/ui/card"
 import { CurrencyInput, Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
+import MultipleSelector from "~/components/ui/multiselect"
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import {
 	Select,
@@ -67,7 +68,6 @@ export async function action({ request }: Route.ActionArgs) {
 	}
 
 	// Add the job to the database
-	console.log(submission.value)
 
 	return { lastResult: null }
 }
@@ -170,23 +170,21 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 
 							<div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
 								<Label
-									htmlFor={fields.category.id}
+									htmlFor={fields.categories.id}
 									className="text-sm/6 sm:pt-1.5"
 								>
-									Job Category*
+									Job Categories*
 								</Label>
 								<div className="mt-2 sm:col-span-2 sm:mt-0">
-									<SelectField
-										meta={fields.category}
+									<MultipleSelectorField
+										meta={fields.categories}
 										items={[...JOB_CATEGORY]}
-										placeholder="Select"
-										triggerClassName="w-full sm:max-w-sm"
 									/>
 									<div
 										className="pt-1 pl-1 text-destructive text-xs"
-										id={fields.category.errorId}
+										id={fields.categories.errorId}
 									>
-										{fields.category.errors}
+										{fields.categories.errors}
 									</div>
 								</div>
 							</div>
@@ -251,7 +249,7 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 										items={[...WORK_PRESENCE]}
 									/>
 									<div
-										className="pt-1 pl-1 text-destructive text-xs"
+										className="pt-3 text-destructive text-xs"
 										id={fields.workPresence.errorId}
 									>
 										{fields.workPresence.errors}
@@ -332,7 +330,7 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 										items={[...SALARY_TYPE]}
 									/>
 									<div
-										className="pt-1 pl-1 text-destructive text-xs"
+										className="pt-3 text-destructive text-xs"
 										id={fields.salaryType.errorId}
 									>
 										{fields.salaryType.errors}
@@ -526,16 +524,11 @@ function RichTextField({
 				aria-hidden
 				tabIndex={-1}
 				className="sr-only"
-				onFocus={() =>
-					editor.send({
-						type: "focus",
-					})
-				}
+				onFocus={() => editor.send({ type: "focus" })}
 			/>
 			<EditorEventListener
 				on={(event) => {
 					if (event.type === "mutation") {
-						// setValue(event.value)
 						control.change(JSON.stringify(event.value))
 					}
 					if (event.type === "blurred") {
@@ -551,6 +544,55 @@ function RichTextField({
 				// renderAnnotation={renderAnnotation}
 				renderBlock={(props) => <div>{props.children}</div>}
 				renderListItem={(props) => <>{props.children}</>}
+			/>
+		</>
+	)
+}
+
+function MultipleSelectorField({
+	meta,
+	items,
+}: {
+	meta: FieldMetadata<string[] | string>
+	items: string[]
+}) {
+	const multipleSelectorRef =
+		useRef<ComponentRef<typeof MultipleSelector>>(null)
+	const control = useControl(meta)
+	const controlValue = (control.value as Array<string>) ?? []
+
+	return (
+		<>
+			<select
+				ref={control.register}
+				name={meta.name}
+				defaultValue={(meta.initialValue as Array<string>) ?? []}
+				multiple
+				aria-hidden
+				tabIndex={-1}
+				className="sr-only"
+				onFocus={() => multipleSelectorRef.current?.focus()}
+			>
+				<option value="" />
+				{items.map((option) => (
+					<option key={option} value={option} />
+				))}
+			</select>
+			<MultipleSelector
+				ref={multipleSelectorRef}
+				commandProps={{
+					label: "Select one or more",
+					className: "w-full md:max-w-sm",
+				}}
+				defaultOptions={items.map((item) => ({ value: item, label: item }))}
+				placeholder="Select one or more"
+				emptyIndicator={<p className="text-center text-sm">No results found</p>}
+				value={controlValue.map((item) => ({ value: item, label: item })) || []}
+				onChange={(event) =>
+					control.change(event.map((item) => item.value) || [])
+				}
+				hidePlaceholderWhenSelected
+				className="w-full md:max-w-sm"
 			/>
 		</>
 	)
