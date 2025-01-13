@@ -46,6 +46,8 @@ import EMPLOYMENT_TYPE from "~/constants/employment-type"
 import JOB_CATEGORY from "~/constants/job-category"
 import SALARY_TYPE from "~/constants/salary-type"
 import WORK_PRESENCE from "~/constants/work-presence"
+import { createClient } from "~/db/supabase.server"
+import { redirectWithToast } from "~/lib/toast.server"
 import { jobSchema } from "~/schemas/job"
 import editorStylesheet from "~/text-editor.css?url"
 import type { Route } from "./+types/post-a-job"
@@ -59,6 +61,22 @@ export const links: Route.LinksFunction = () => {
 	]
 }
 
+export async function loader({ request }: Route.LoaderArgs) {
+	const { supabase, headers } = createClient(request)
+
+	const {
+		data: { user },
+	} = await supabase.auth.getUser()
+
+	if (!user) {
+		return redirectWithToast("/login", {
+			title: "Unauthenticated",
+			description: "You must be logged in to post a job.",
+			type: "error",
+		})
+	}
+}
+
 export async function action({ request }: Route.ActionArgs) {
 	const formData = await request.formData()
 	const submission = parseWithZod(formData, { schema: jobSchema })
@@ -67,9 +85,43 @@ export async function action({ request }: Route.ActionArgs) {
 		return { lastResult: submission.reply() }
 	}
 
-	// Add the job to the database
+	const { supabase, headers } = createClient(request)
 
-	return { lastResult: null }
+	const { error, data } = await supabase
+		.from("jobs")
+		.insert([
+			{
+				title: submission.value.title,
+				company_name: submission.value.companyName,
+				company_website: submission.value.companyWebsite,
+				part_of_town: submission.value.partOfTown,
+				work_presence: submission.value.workPresence,
+				employment_type: submission.value.employmentType,
+				salary_min: submission.value.salaryMin,
+				salary_max: submission.value.salaryMax,
+				salary_type: submission.value.salaryType,
+				description: submission.value.description,
+				how_to_apply: submission.value.howToApply,
+				categories: submission.value.categories,
+			},
+		])
+		.select()
+
+	if (error) {
+		throw new Error(`Error creating job: ${error.message}`)
+	}
+
+	return redirectWithToast(
+		`/job/${data[0].id}`,
+		{
+			title: "Job posted successfully!",
+			description: `Job posting for "${submission.value.title}" has been created.`,
+			type: "success",
+		},
+		{
+			headers,
+		},
+	)
 }
 
 export default function PostAJob({ actionData }: Route.ComponentProps) {
