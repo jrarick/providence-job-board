@@ -13,6 +13,7 @@ import providenceIcon from "./assets/providence-icon.svg"
 
 import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
+import { ProgressBar } from "./components/ui/progress-bar"
 import { Toaster as Sonner } from "./components/ui/sonner"
 import { createClient } from "./db/supabase.server"
 import { useToast } from "./hooks/toaster"
@@ -78,6 +79,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Header userName={userName} />
 				{children}
 				<Footer />
+				<ProgressBar />
 				<ScrollRestoration />
 				<Scripts />
 			</body>

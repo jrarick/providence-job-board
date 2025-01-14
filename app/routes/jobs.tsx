@@ -1,6 +1,6 @@
 import { PortableText } from "@portabletext/react"
 import { ClockIcon, MapPinIcon } from "lucide-react"
-import { Link, data as dataResponse, redirect } from "react-router"
+import { Link, Outlet, data as dataResponse, redirect } from "react-router"
 import Container from "~/components/shell/container"
 import { createClient } from "~/db/supabase.server"
 import { timeSincePosted } from "~/lib/utils"
@@ -77,6 +77,7 @@ export default function Jobs({ loaderData }: Route.ComponentProps) {
 						</div>
 						<Link
 							to={`/jobs/${jobPreview.id}`}
+							preventScrollReset
 							className="line-clamp-1 text-ellipsis font-display font-medium text-2xl"
 						>
 							{jobPreview.title}
@@ -105,6 +106,7 @@ export default function Jobs({ loaderData }: Route.ComponentProps) {
 					</div>
 				))}
 			</div>
+			<Outlet />
 		</Container>
 	)
 }
