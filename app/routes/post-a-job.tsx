@@ -45,7 +45,7 @@ import {
 import EMPLOYMENT_TYPE from "~/constants/employment-type"
 import JOB_CATEGORY from "~/constants/job-category"
 import SALARY_TYPE from "~/constants/salary-type"
-import WORK_PRESENCE from "~/constants/work-presence"
+import WORK_SETTING from "~/constants/work-setting"
 import { createClient } from "~/db/supabase.server"
 import { redirectWithToast } from "~/lib/toast.server"
 import { jobSchema } from "~/schemas/job"
@@ -94,8 +94,8 @@ export async function action({ request }: Route.ActionArgs) {
 				title: submission.value.title,
 				company_name: submission.value.companyName,
 				company_website: submission.value.companyWebsite,
-				part_of_town: submission.value.partOfTown,
-				work_presence: submission.value.workPresence,
+				location: submission.value.location,
+				work_setting: submission.value.workSetting,
 				employment_type: submission.value.employmentType,
 				salary_min: submission.value.salaryMin,
 				salary_max: submission.value.salaryMax,
@@ -112,7 +112,7 @@ export async function action({ request }: Route.ActionArgs) {
 	}
 
 	return redirectWithToast(
-		`/job/${data[0].id}`,
+		"/jobs",
 		{
 			title: "Job posted successfully!",
 			description: `Job posting for "${submission.value.title}" has been created.`,
@@ -136,8 +136,6 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 		shouldRevalidate: "onInput",
 	})
 
-	let job = null
-
 	return (
 		<Container>
 			<Card className="mx-auto max-w-3xl">
@@ -148,12 +146,12 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 					<CardDescription className="max-w-md">
 						If you're a business owner posting a job, or are just an employee
 						sharing a job posting on behalf of your company, please fill out
-						this form. <span>(*) denotes a required field.</span>
+						this form.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<Form method="post" action="/post-a-job" {...getFormProps(form)}>
-						<div className="mt-10 space-y-8 border-gray-900/10 border-b pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
+						<div className="mt-10 space-y-8 border-border/50 border-b pb-12 sm:space-y-0 sm:divide-y sm:divide-border/50 sm:border-t sm:pb-0">
 							<div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
 								<Label
 									htmlFor={fields.title.id}
@@ -266,14 +264,14 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 
 							<div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
 								<Label
-									htmlFor={fields.partOfTown.id}
+									htmlFor={fields.location.id}
 									className="text-sm/6 sm:pt-1.5"
 								>
-									Part Of Town
+									Location
 								</Label>
 								<div className="mt-2 sm:col-span-2 sm:mt-0">
 									<Input
-										{...getInputProps(fields.partOfTown, {
+										{...getInputProps(fields.location, {
 											type: "text",
 										})}
 										placeholder="Downtown, Dripping Springs, Round Rock, etc."
@@ -281,30 +279,30 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 									/>
 									<div
 										className="pt-1 pl-1 text-destructive text-xs"
-										id={fields.partOfTown.errorId}
+										id={fields.location.errorId}
 									>
-										{fields.partOfTown.errors}
+										{fields.location.errors}
 									</div>
 								</div>
 							</div>
 
 							<div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:py-6">
 								<Label
-									htmlFor={fields.workPresence.id}
+									htmlFor={fields.workSetting.id}
 									className="text-sm/6 sm:pt-1.5"
 								>
-									Work Presence*
+									Work Setting*
 								</Label>
 								<div className="mt-2 sm:col-span-2 sm:mt-0">
 									<RadioGroupField
-										meta={fields.workPresence}
-										items={[...WORK_PRESENCE]}
+										meta={fields.workSetting}
+										items={[...WORK_SETTING]}
 									/>
 									<div
 										className="pt-3 text-destructive text-xs"
-										id={fields.workPresence.errorId}
+										id={fields.workSetting.errorId}
 									>
-										{fields.workPresence.errors}
+										{fields.workSetting.errors}
 									</div>
 								</div>
 							</div>
@@ -431,23 +429,23 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 					</Form>
 				</CardContent>
 				<CardFooter>
-					<div>
-						<div className="space-x-6">
-							<Button type="submit" form={form.id}>
-								{job ? "Save" : "Submit"}
-							</Button>
+					<div className="w-full">
+						<p className="mb-6 text-muted-foreground text-xs italic">
+							*Denotes required field
+						</p>
+						<div className="flex w-full flex-row flex-wrap justify-center gap-6 sm:justify-end">
 							<Link
 								className={buttonVariants({
-									variant: "ghost",
+									variant: "secondary",
 								})}
 								to="/"
 							>
 								Cancel
 							</Link>
+							<Button type="submit" form={form.id}>
+								Submit
+							</Button>
 						</div>
-						<p className="mt-6 text-muted-foreground text-xs italic">
-							*Denotes required field
-						</p>
 					</div>
 				</CardFooter>
 			</Card>

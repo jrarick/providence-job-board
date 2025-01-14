@@ -2,19 +2,12 @@ import { z } from "zod"
 import EMPLOYMENT_TYPE from "~/constants/employment-type"
 import JOB_CATEGORY from "~/constants/job-category"
 import SALARY_TYPE from "~/constants/salary-type"
-import WORK_PRESENCE from "~/constants/work-presence"
+import WORK_SETTING from "~/constants/work-setting"
 
 export const jobSchema = z
 	.object({
 		title: z.string({ required_error: "Job Title is required" }),
 		companyName: z.string({ required_error: "Company Name is required" }),
-		// categories: z.union([
-		// 	z.enum(JOB_CATEGORY),
-		// 	z
-		// 		.array(z.enum(JOB_CATEGORY))
-		// 		.min(1, "At least one category is required")
-		// 		.max(5, "No more than 5 categories are allowed"),
-		// ]),
 		categories: z
 			.array(z.enum(JOB_CATEGORY))
 			.min(1, "At least one category is required")
@@ -42,8 +35,8 @@ export const jobSchema = z
 		salaryType: z.enum(SALARY_TYPE, {
 			required_error: "Required",
 		}),
-		partOfTown: z.string().optional(),
-		workPresence: z.enum(WORK_PRESENCE, {
+		location: z.string().optional(),
+		workSetting: z.enum(WORK_SETTING, {
 			required_error: "Required",
 		}),
 		companyWebsite: z
@@ -67,4 +60,21 @@ export const jobSchema = z
 		},
 	)
 
-export type Job = z.infer<typeof jobSchema>
+export type Job = z.infer<typeof jobSchema> & {
+	id: number
+	created_at: Date
+	updated_at: Date
+}
+
+export type JobPreview = Omit<
+	Job,
+	| "employmentType"
+	| "salaryMin"
+	| "salaryMax"
+	| "salaryType"
+	| "workSetting"
+	| "companyWebsite"
+	| "howToApply"
+	| "profileId"
+	| "updatedAt"
+>

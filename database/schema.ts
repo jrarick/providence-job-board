@@ -36,7 +36,7 @@ export const passwords = pgTable("passwords", {
 // 	companyName: text("company_name").notNull(),
 // 	companyWebsite: text("company_website"),
 // 	location: text(),
-// 	workPresence: text("work_presence"),
+// 	workSetting: text("work_setting"),
 // 	description: text().notNull(),
 // 	employmentType: text("employment_type")
 // 		.$type<
