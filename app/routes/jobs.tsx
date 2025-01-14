@@ -17,8 +17,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 		return redirect("/login", { headers })
 	}
 
-	const { data, error } = await supabase.from("jobs").select(
-		`
+	const { data, error } = await supabase
+		.from("jobs")
+		.select(
+			`
       id,
       categories,
       title,
@@ -27,7 +29,8 @@ export async function loader({ request }: Route.LoaderArgs) {
       description,
       created_at
     `,
-	)
+		)
+		.order("created_at", { ascending: false })
 
 	const jobPreviews:
 		| {
@@ -74,12 +77,12 @@ export default function Jobs({ loaderData }: Route.ComponentProps) {
 						</div>
 						<Link
 							to={`/jobs/${jobPreview.id}`}
-							className="line-clamp-1 text-ellipsis font-display font-medium text-3xl"
+							className="line-clamp-1 text-ellipsis font-display font-medium text-2xl"
 						>
 							{jobPreview.title}
 							<span className="absolute inset-0" />
 						</Link>
-						<p className="mt-4 font-display font-semibold text-lg text-muted-foreground uppercase tracking-widest">
+						<p className="mt-2 font-semibold text-lg text-muted-foreground ">
 							{jobPreview.company_name}
 						</p>
 						<div className="mt-2 line-clamp-3 h-[4.5rem] text-ellipsis text-longform-foreground">

@@ -17,7 +17,7 @@ export const jobSchema = z
 		}),
 		description: z.string({ required_error: "Job Description is required" }),
 		salaryMin: z.preprocess(
-			(val) => Number(val),
+			(val) => Number((val as string).replace(/[^0-9.]/g, "")),
 			z
 				.number()
 				.nonnegative()
@@ -25,7 +25,7 @@ export const jobSchema = z
 				.optional(),
 		),
 		salaryMax: z.preprocess(
-			(val) => Number(val),
+			(val) => Number((val as string).replace(/[^0-9.]/g, "")),
 			z
 				.number()
 				.nonnegative()
