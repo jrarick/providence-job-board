@@ -69,8 +69,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
 	})
 
 	const navigation = useNavigation()
-
-	const isNotIdle = navigation.state !== "idle"
+	const isSubmitting = navigation.state === "submitting"
 
 	return (
 		<div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
@@ -147,8 +146,8 @@ export default function Register({ actionData }: Route.ComponentProps) {
 									{fields.password.errors}
 								</div>
 							</div>
-							<Button type="submit" disabled={isNotIdle}>
-								{isNotIdle ? (
+							<Button type="submit" disabled={isSubmitting}>
+								{isSubmitting ? (
 									<>
 										<LoaderCircleIcon className="animate-spin" />
 										Registering...

@@ -12,8 +12,9 @@ import {
 	PortableTextEditable,
 	useEditor,
 } from "@portabletext/editor"
+import { LoaderCircleIcon } from "lucide-react"
 import { type ComponentProps, type ComponentRef, useRef } from "react"
-import { Form, Link } from "react-router"
+import { Form, Link, useNavigation } from "react-router"
 import { ClientOnly } from "~/components/client-only"
 import { Toolbar } from "~/components/rich-text-editor/toolbar"
 import {
@@ -135,6 +136,9 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 		shouldValidate: "onSubmit",
 		shouldRevalidate: "onInput",
 	})
+
+	const navigation = useNavigation()
+	const isSubmitting = navigation.state === "submitting"
 
 	return (
 		<Container>
@@ -442,8 +446,15 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 							>
 								Cancel
 							</Link>
-							<Button type="submit" form={form.id}>
-								Submit
+							<Button type="submit" form={form.id} disabled={isSubmitting}>
+								{isSubmitting ? (
+									<>
+										<LoaderCircleIcon className="animate-spin" />
+										Submitting...
+									</>
+								) : (
+									"Submit"
+								)}
 							</Button>
 						</div>
 					</div>

@@ -211,10 +211,10 @@ function Footer() {
 					<p className="max-w-96 text-muted-foreground text-xs leading-5">
 						Experiencing an issue? Email{" "}
 						<a
-							href="mailto:josh@longhorndesign.studio"
+							href="mailto:rarick.joshua.e@gmail.com"
 							className="hover:underline"
 						>
-							josh@longhorndesign.studio
+							rarick.joshua.e@gmail.com
 						</a>{" "}
 						with a description of the problem.
 					</p>

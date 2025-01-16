@@ -242,7 +242,7 @@ export default function JobsId({ loaderData }: Route.ComponentProps) {
 				}, 200)
 			}}
 		>
-			<DrawerContent className="max-h-[85lvh]">
+			<DrawerContent className="max-h-[75lvh]">
 				<DrawerHeader className="border-border border-b text-left">
 					<DrawerTitle className="text-xl">{job.title}</DrawerTitle>
 					<DrawerDescription className="text-base">

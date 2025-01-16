@@ -84,7 +84,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
 	})
 
 	const navigation = useNavigation()
-	const isNotIdle = navigation.state !== "idle"
+	const isSubmitting = navigation.state === "submitting"
 
 	return (
 		<Container>
@@ -141,8 +141,8 @@ export default function Login({ actionData }: Route.ComponentProps) {
 									{fields.password.errors}
 								</div>
 							</div>
-							<Button type="submit" disabled={isNotIdle}>
-								{isNotIdle ? (
+							<Button type="submit" disabled={isSubmitting}>
+								{isSubmitting ? (
 									<>
 										<LoaderCircleIcon className="animate-spin" />
 										Logging In...
