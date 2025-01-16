@@ -50,7 +50,7 @@ export default function Jobs({ loaderData }: Route.ComponentProps) {
 
 	return (
 		<Container className="max-w-2xl">
-			<h1 className="font-display font-medium text-4xl">Latest Jobs</h1>
+			<h1 className="px-4 font-display font-medium text-4xl">Latest Jobs</h1>
 			<div className="mt-12 divide-y divide-border border-border border-y">
 				{loaderData.jobPreviews?.map((jobPreview) => (
 					<div
@@ -70,15 +70,15 @@ export default function Jobs({ loaderData }: Route.ComponentProps) {
 						<Link
 							to={`/jobs/${jobPreview.id}`}
 							preventScrollReset
-							className="line-clamp-1 text-ellipsis font-display font-medium text-2xl"
+							className="line-clamp-1 text-ellipsis font-display font-medium text-xl sm:text-2xl"
 						>
 							{jobPreview.title}
 							<span className="absolute inset-0" />
 						</Link>
-						<p className="mt-2 font-semibold text-lg text-muted-foreground ">
+						<p className="mt-2 font-semibold text-base text-muted-foreground sm:text-lg ">
 							{jobPreview.companyName}
 						</p>
-						<div className="mt-2 line-clamp-3 h-[4.5rem] text-ellipsis text-longform-foreground">
+						<div className="mt-2 line-clamp-3 h-16 text-ellipsis text-longform-foreground text-sm sm:h-[4.5rem] sm:text-base">
 							<PortableText value={JSON.parse(jobPreview.description)} />
 						</div>
 						<div className="mt-6 flex space-x-6 font-bold text-muted-foreground leading-5">
