@@ -62,8 +62,9 @@ export const jobSchema = z
 
 export type Job = z.infer<typeof jobSchema> & {
 	id: number
-	created_at: Date
-	updated_at: Date
+	createdAt: Date
+	updatedAt: Date
+	profileId: number
 }
 
 export type JobPreview = Omit<

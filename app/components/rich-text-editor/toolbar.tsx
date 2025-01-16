@@ -112,19 +112,27 @@ export function Toolbar() {
 						</SelectItem>
 						<SelectItem value="h1">
 							<Heading1Icon className="size-4" aria-hidden="true" />
-							<span>Heading 1</span>
+							<span className="font-display font-medium text-2xl">
+								Heading 1
+							</span>
 						</SelectItem>
 						<SelectItem value="h2">
 							<Heading2Icon className="size-4" aria-hidden="true" />
-							<span>Heading 2</span>
+							<span className="font-display font-medium text-xl">
+								Heading 2
+							</span>
 						</SelectItem>
 						<SelectItem value="h3">
 							<Heading3Icon className="size-4" aria-hidden="true" />
-							<span>Heading 3</span>
+							<span className="font-display font-medium text-lg">
+								Heading 3
+							</span>
 						</SelectItem>
 						<SelectItem value="blockquote">
 							<QuoteIcon className="size-4" aria-hidden="true" />
-							<span>Blockquote</span>
+							<span className="text-muted-foreground italic before:content-['''] after:content-[''']">
+								Blockquote
+							</span>
 						</SelectItem>
 					</SelectGroup>
 				</SelectContent>

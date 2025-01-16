@@ -1,9 +1,11 @@
 import { PortableText } from "@portabletext/react"
-import { ClockIcon, MapPinIcon } from "lucide-react"
-import { Link, Outlet, data as dataResponse, redirect } from "react-router"
+import { ClockIcon, LoaderCircleIcon, MapPinIcon } from "lucide-react"
+import { Link, Outlet, data, redirect } from "react-router"
+import { ClientOnly } from "~/components/client-only"
 import Container from "~/components/shell/container"
 import { createClient } from "~/db/supabase.server"
 import { timeSincePosted } from "~/lib/utils"
+import type { JobPreview } from "~/schemas/job"
 import type { Route } from "./+types/jobs"
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -17,38 +19,28 @@ export async function loader({ request }: Route.LoaderArgs) {
 		return redirect("/login", { headers })
 	}
 
-	const { data, error } = await supabase
+	const jobPreviews = await supabase
 		.from("jobs")
 		.select(
 			`
       id,
       categories,
       title,
-      company_name,
+      companyName:company_name,
       location,
       description,
-      created_at
+      createdAt:created_at
     `,
 		)
 		.order("created_at", { ascending: false })
 
-	const jobPreviews:
-		| {
-				id: number
-				categories: string[]
-				title: string
-				company_name: string
-				location: string
-				description: string
-				created_at: string
-		  }[]
-		| null = data
-
-	if (error) {
-		throw new Error(`Error fetching jobs: ${error.message}`)
+	if (jobPreviews.error) {
+		throw new Error(`Error fetching jobs: ${jobPreviews.error.message}`)
 	}
 
-	return dataResponse({ jobPreviews }, { headers })
+	const jobPreviewsTyped: JobPreview[] = jobPreviews.data
+
+	return data({ jobPreviews: jobPreviewsTyped }, { headers })
 }
 
 export default function Jobs({ loaderData }: Route.ComponentProps) {
@@ -84,7 +76,7 @@ export default function Jobs({ loaderData }: Route.ComponentProps) {
 							<span className="absolute inset-0" />
 						</Link>
 						<p className="mt-2 font-semibold text-lg text-muted-foreground ">
-							{jobPreview.company_name}
+							{jobPreview.companyName}
 						</p>
 						<div className="mt-2 line-clamp-3 h-[4.5rem] text-ellipsis text-longform-foreground">
 							<PortableText value={JSON.parse(jobPreview.description)} />
@@ -92,9 +84,17 @@ export default function Jobs({ loaderData }: Route.ComponentProps) {
 						<div className="mt-6 flex space-x-6 font-bold text-muted-foreground leading-5">
 							<div className="flex space-x-2">
 								<ClockIcon className="h-4 w-auto flex-none" />
-								<span className="font-bold text-muted-foreground text-xs">
-									{timeSincePosted(new Date(jobPreview.created_at))}
-								</span>
+								<ClientOnly
+									fallback={
+										<LoaderCircleIcon className="size-4 animate-spin" />
+									}
+								>
+									{() => (
+										<span className="font-bold text-muted-foreground text-xs">
+											{timeSincePosted(new Date(jobPreview.createdAt))}
+										</span>
+									)}
+								</ClientOnly>
 							</div>
 							<div className="flex space-x-2">
 								<MapPinIcon className="h-4 w-auto flex-none" />

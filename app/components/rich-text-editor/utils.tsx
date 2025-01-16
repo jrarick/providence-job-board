@@ -22,16 +22,28 @@ export const schemaDefinition = defineSchema({
 
 export const renderStyle: RenderStyleFunction = (props) => {
 	if (props.schemaType.value === "h1") {
-		return <h1>{props.children}</h1>
+		return (
+			<h1 className="font-display font-medium text-2xl">{props.children}</h1>
+		)
 	}
 	if (props.schemaType.value === "h2") {
-		return <h2>{props.children}</h2>
+		return (
+			<h2 className="font-display font-medium text-xl">{props.children}</h2>
+		)
 	}
 	if (props.schemaType.value === "h3") {
-		return <h3>{props.children}</h3>
+		return (
+			<h3 className="font-display font-medium text-lg">{props.children}</h3>
+		)
 	}
 	if (props.schemaType.value === "blockquote") {
-		return <blockquote>{props.children}</blockquote>
+		return (
+			<blockquote
+				className={`pl-3 text-muted-foreground italic before:content-['"'] after:content-['"']`}
+			>
+				{props.children}
+			</blockquote>
+		)
 	}
 	return <>{props.children}</>
 }

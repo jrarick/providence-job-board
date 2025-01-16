@@ -65,3 +65,31 @@ export function timeSincePosted(date: Date) {
 	}
 	return `${days} days ago`
 }
+
+export function formatMoney(amount: number) {
+	return amount.toLocaleString("en-US", {
+		style: "currency",
+		currency: "USD",
+		minimumFractionDigits: 0,
+	})
+}
+
+export function formatSalaryString(
+	salaryType: string,
+	salaryMin?: number,
+	salaryMax?: number,
+) {
+	if (!salaryMin && !salaryMax) {
+		return "Not specified"
+	}
+	if (salaryMin && !salaryMax) {
+		return `${formatMoney(salaryMin)} ${salaryType}`
+	}
+	if (!salaryMin && salaryMax) {
+		return `${formatMoney(salaryMax)} ${salaryType}`
+	}
+	if (salaryMin && salaryMax && salaryMin === salaryMax) {
+		return `${formatMoney(salaryMin)} ${salaryType}`
+	}
+	return `${formatMoney(salaryMin as number)} - ${formatMoney(salaryMax as number)} ${salaryType}`
+}
