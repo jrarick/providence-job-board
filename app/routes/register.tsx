@@ -2,6 +2,7 @@ import { getFormProps, getInputProps, useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
 import { LoaderCircleIcon } from "lucide-react"
 import { Form, Link, redirect, useNavigation } from "react-router"
+import Container from "~/components/shell/container"
 import { Button } from "~/components/ui/button"
 import {
 	Card,
@@ -72,7 +73,7 @@ export default function Register({ actionData }: Route.ComponentProps) {
 	const isSubmitting = navigation.state === "submitting"
 
 	return (
-		<div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+		<Container>
 			<div className="mx-auto max-w-sm">
 				<Card className="max-w-xl">
 					<CardHeader>
@@ -168,6 +169,6 @@ export default function Register({ actionData }: Route.ComponentProps) {
 					</CardContent>
 				</Card>
 			</div>
-		</div>
+		</Container>
 	)
 }

@@ -1,5 +1,6 @@
 import { redirect } from "react-router"
 import { createClient } from "~/db/supabase.server"
+import { redirectWithToast } from "~/lib/toast.server"
 import type { Route } from "./+types/logout"
 
 export async function action({ request }: Route.ActionArgs) {
@@ -15,5 +16,13 @@ export async function action({ request }: Route.ActionArgs) {
 
 	await supabase.auth.signOut()
 
-	return redirect("/", { headers })
+	return redirectWithToast(
+		"/",
+		{
+			title: "Logged Out",
+			description: "Your session has ended.",
+			type: "success",
+		},
+		{ headers },
+	)
 }

@@ -84,7 +84,7 @@ export function Toolbar() {
 	const [style, setStyle] = useState("normal")
 
 	return (
-		<div className="flex flex-row gap-1 rounded-t-md border-border border-t border-r border-l bg-body p-1">
+		<div className="flex flex-row flex-wrap gap-1 rounded-t-md border-border border-t border-r border-l bg-body p-1">
 			{schemaDefinition.decorators.map((decorator) => (
 				<DecoratorButton key={decorator.name} decorator={decorator} />
 			))}
@@ -101,7 +101,7 @@ export function Toolbar() {
 					})
 				}}
 			>
-				<SelectTrigger className="h-8 w-48 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0 [&>span_svg]:text-muted-foreground/80">
+				<SelectTrigger className="h-8 w-36 sm:w-48 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0 [&>span_svg]:text-muted-foreground/80">
 					<SelectValue />
 				</SelectTrigger>
 				<SelectContent className="[&_*[role=option]>span>svg]:shrink-0 [&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8">

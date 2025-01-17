@@ -1,4 +1,5 @@
 import {
+	Form,
 	Link,
 	Links,
 	Meta,
@@ -11,9 +12,45 @@ import {
 } from "react-router"
 import providenceIcon from "./assets/providence-icon.svg"
 
+import {
+	BriefcaseIcon,
+	ChevronsUpDownIcon,
+	HomeIcon,
+	LogOutIcon,
+	PenLineIcon,
+	SettingsIcon,
+	SquareUserIcon,
+	UserPenIcon,
+} from "lucide-react"
 import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
+import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "./components/ui/dropdown-menu"
 import { ProgressBar } from "./components/ui/progress-bar"
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarInset,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarProvider,
+	SidebarRail,
+	SidebarTrigger,
+	useSidebar,
+} from "./components/ui/sidebar"
 import { Toaster as Sonner } from "./components/ui/sonner"
 import { createClient } from "./db/supabase.server"
 import { useToast } from "./hooks/toaster"
@@ -40,6 +77,13 @@ export const links: Route.LinksFunction = () => [
 	{ rel: "stylesheet", href: stylesheet },
 ]
 
+interface User {
+	fullName?: string
+	initials?: string
+	email?: string
+	avatarUrl?: string
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
 	const { supabase, headers: supabaseHeaders } = createClient(request)
 
@@ -47,13 +91,38 @@ export async function loader({ request }: Route.LoaderArgs) {
 		data: { user },
 	} = await supabase.auth.getUser()
 
+	const userProfile = await supabase
+		.from("profiles")
+		.select(`
+		firstName:first_name,
+		lastName:last_name,
+		avatarUrl:avatar_url
+	`)
+		.eq("id", user?.id)
+		.single()
+
 	const { toast, headers: toastHeaders } = await getToast(request)
+
+	const fullName = userProfile.error
+		? undefined
+		: `${userProfile.data.firstName} ${userProfile.data.lastName}`
+	const initials = userProfile.error
+		? undefined
+		: userProfile.data.firstName.charAt(0).toUpperCase() +
+			userProfile.data.lastName.charAt(0).toUpperCase()
+	const email = user?.email
+	const avatarUrl = userProfile.error ? undefined : userProfile.data.avatarUrl
 
 	return data(
 		{
-			userName: user
-				? `${user.user_metadata.first_name} ${user.user_metadata.last_name}`
-				: null,
+			user: user
+				? {
+						fullName,
+						initials,
+						email,
+						avatarUrl,
+					}
+				: undefined,
 			toast,
 		},
 		{
@@ -63,9 +132,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const rootLoaderData = useRouteLoaderData("root")
+	const rootLoaderData = useRouteLoaderData<typeof loader>("root")
 
-	const userName = rootLoaderData?.userName as string | undefined
+	const { user } = rootLoaderData ?? {}
 
 	return (
 		<html lang="en">
@@ -75,11 +144,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Meta />
 				<Links />
 			</head>
-			<body className="bg-body text-body-foreground selection:bg-primary selection:text-primary-foreground">
-				<Header userName={userName} />
-				{children}
-				<Footer />
-				<ProgressBar />
+			<body className="selection:bg-primary selection:text-primary-foreground">
+				<SidebarProvider>
+					{user && <AppSidebar user={user} />}
+					<SidebarInset className="bg-body text-body-foreground">
+						<Header user={user} />
+						{children}
+						<Footer />
+						<ProgressBar />
+					</SidebarInset>
+				</SidebarProvider>
 				<ScrollRestoration />
 				<Scripts />
 			</body>
@@ -127,20 +201,169 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	)
 }
 
-function Header({ userName }: { userName?: string }) {
+function AppSidebar({ user }: { user: User }) {
+	const jobSeekerItems = [
+		{
+			title: "Browse Jobs",
+			url: "/jobs",
+			icon: BriefcaseIcon,
+		},
+		{
+			title: "Manage Job Seeker Profile",
+			url: "/job-seeker-profile",
+			icon: UserPenIcon,
+		},
+	]
+
+	const employerItems = [
+		{
+			title: "Post a Job",
+			url: "/post-a-job",
+			icon: PenLineIcon,
+		},
+		{
+			title: "Browse Job Seekers",
+			url: "/job-seekers",
+			icon: SquareUserIcon,
+		},
+	]
+
+	const { isMobile } = useSidebar()
+
 	return (
-		<header className="border-border border-b bg-card px-6 py-6 text-card-foreground sm:px-12">
-			<div className="flex justify-center">
+		<Sidebar collapsible="icon">
+			<SidebarHeader>
+				<SidebarMenuButton asChild tooltip="Home">
+					<Link
+						to="/"
+						className="flex rounded-lg bg-sidebar-primary/80 text-sidebar-primary-foreground transition-colors hover:bg-sidebar-primary hover:text-sidebar-primary-foreground"
+					>
+						<HomeIcon />
+						<span>Home</span>
+					</Link>
+				</SidebarMenuButton>
+			</SidebarHeader>
+			<SidebarContent>
+				<SidebarGroup>
+					<SidebarGroupLabel>For Job Seekers</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{jobSeekerItems.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild tooltip={item.title}>
+										<Link to={item.url}>
+											<item.icon />
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+				<SidebarGroup>
+					<SidebarGroupLabel>For Employers/Referers</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{employerItems.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild tooltip={item.title}>
+										<Link to={item.url}>
+											<item.icon />
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+			</SidebarContent>
+			<SidebarFooter>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<SidebarMenuButton
+									size="lg"
+									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+								>
+									<Avatar className="h-8 w-8 rounded-lg">
+										<AvatarImage src={user.avatarUrl} alt={user.fullName} />
+										<AvatarFallback className="rounded-lg">
+											{user.initials}
+										</AvatarFallback>
+									</Avatar>
+									<div className="grid flex-1 text-left text-sm leading-tight">
+										<span className="truncate font-semibold">
+											{user.fullName}
+										</span>
+										<span className="truncate text-xs">{user.email}</span>
+									</div>
+									<ChevronsUpDownIcon className="ml-auto size-4" />
+								</SidebarMenuButton>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+								side={isMobile ? "bottom" : "right"}
+								align="end"
+								sideOffset={4}
+							>
+								<DropdownMenuLabel className="p-0 font-normal">
+									<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+										<Avatar className="h-8 w-8 rounded-lg">
+											<AvatarImage src={user.avatarUrl} alt={user.fullName} />
+											<AvatarFallback className="rounded-lg">
+												{user.initials}
+											</AvatarFallback>
+										</Avatar>
+										<div className="grid flex-1 text-left text-sm leading-tight">
+											<span className="truncate font-semibold">
+												{user.fullName}
+											</span>
+											<span className="truncate text-xs">{user.email}</span>
+										</div>
+									</div>
+								</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem asChild>
+									<Link to="/account-settings">
+										<SettingsIcon className="size-4" />
+										Account Settings
+									</Link>
+								</DropdownMenuItem>
+								<Form action="/logout" method="post">
+									<DropdownMenuItem asChild>
+										<button type="submit" className="w-full">
+											<LogOutIcon className="size-4" />
+											Log out
+										</button>
+									</DropdownMenuItem>
+								</Form>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarFooter>
+			<SidebarRail />
+		</Sidebar>
+	)
+}
+
+function Header({ user }: { user?: User }) {
+	return (
+		<header className="border-border border-b bg-card p-2 text-card-foreground">
+			<div className="flex justify-between">
+				{user && <SidebarTrigger />}
 				<Link
 					to="/"
-					className="max-w-1/2 font-display font-medium text-2xl uppercase tracking-widest sm:text-3xl"
+					className="max-w-1/2 p-4 font-display font-medium text-xl uppercase tracking-widest sm:text-2xl"
 				>
 					<div>Providence</div>
 					<div>Job Board</div>
 				</Link>
-				{userName && (
-					<div className="ml-4 text-primary text-sm">Welcome, {userName}!</div>
-				)}
+				{/* dummy div to center logo */}
+				<div />
 			</div>
 		</header>
 	)
@@ -149,7 +372,7 @@ function Header({ userName }: { userName?: string }) {
 function Footer() {
 	const footerItems = [
 		{ name: "Browse Jobs", href: "/jobs" },
-		{ name: "Post A Job", href: "/post-a-job" },
+		{ name: "Post A Job", href: "/share-a-job" },
 		{ name: "My Account", href: "/profile" },
 	]
 
