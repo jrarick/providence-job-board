@@ -24,7 +24,9 @@ import {
 } from "lucide-react"
 import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
+import Container from "./components/shell/container"
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
+import { buttonVariants } from "./components/ui/button"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -189,15 +191,31 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	}
 
 	return (
-		<main className="container mx-auto p-4 pt-16">
-			<h1>{message}</h1>
-			<p>{details}</p>
-			{stack && (
-				<pre className="w-full overflow-x-auto p-4">
-					<code>{stack}</code>
-				</pre>
-			)}
-		</main>
+		<Container>
+			<main className="grid place-items-center p-12 px-6 lg:px-8">
+				<div className="text-center">
+					<p className="font-semibold text-base text-foreground">404</p>
+					<h1 className="mt-4 text-balance font-display font-medium text-5xl text-foreground tracking-tight sm:text-7xl">
+						Page not found
+					</h1>
+					<p className="mt-6 max-w-lg text-pretty font-medium text-base text-gray-500 sm:text-lg/8">
+						Sorry, we couldn’t find the page you’re looking for. If you believe
+						this is an error, please contact support.
+					</p>
+					<div className="mt-10 flex flex-wrap items-center justify-center gap-6">
+						<Link to="/" className={buttonVariants({ variant: "default" })}>
+							Go Back Home
+						</Link>
+						<a
+							href="mailto:rarick.joshua.e@gmail.com"
+							className={buttonVariants({ variant: "link" })}
+						>
+							Contact support <span aria-hidden="true">&rarr;</span>
+						</a>
+					</div>
+				</div>
+			</main>
+		</Container>
 	)
 }
 
@@ -354,7 +372,7 @@ function Header({ user }: { user?: User }) {
 	return (
 		<header className="border-border border-b bg-card p-3 text-card-foreground">
 			<div className="flex justify-between">
-				{user && <SidebarTrigger />}
+				{user ? <SidebarTrigger /> : <div />}
 				<Link
 					to="/"
 					className="max-w-1/2 p-2 font-display font-medium text-xl uppercase tracking-widest sm:text-2xl"
