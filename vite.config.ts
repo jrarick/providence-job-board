@@ -1,3 +1,4 @@
+import mdx from "@mdx-js/rollup"
 import { reactRouter } from "@react-router/dev/vite"
 import autoprefixer from "autoprefixer"
 import tailwindcss from "tailwindcss"
@@ -20,5 +21,5 @@ export default defineConfig(({ isSsrBuild, command }) => ({
 	ssr: {
 		noExternal: command === "build" ? true : undefined,
 	},
-	plugins: [reactRouter(), tsconfigPaths()],
+	plugins: [mdx(), reactRouter(), tsconfigPaths()],
 }))

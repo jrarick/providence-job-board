@@ -352,12 +352,12 @@ function AppSidebar({ user }: { user: User }) {
 
 function Header({ user }: { user?: User }) {
 	return (
-		<header className="border-border border-b bg-card p-2 text-card-foreground">
+		<header className="border-border border-b bg-card p-3 text-card-foreground">
 			<div className="flex justify-between">
 				{user && <SidebarTrigger />}
 				<Link
 					to="/"
-					className="max-w-1/2 p-4 font-display font-medium text-xl uppercase tracking-widest sm:text-2xl"
+					className="max-w-1/2 p-2 font-display font-medium text-xl uppercase tracking-widest sm:text-2xl"
 				>
 					<div>Providence</div>
 					<div>Job Board</div>
@@ -371,9 +371,8 @@ function Header({ user }: { user?: User }) {
 
 function Footer() {
 	const footerItems = [
-		{ name: "Browse Jobs", href: "/jobs" },
-		{ name: "Post A Job", href: "/share-a-job" },
-		{ name: "My Account", href: "/profile" },
+		{ name: "Account Settings", href: "/account-settings" },
+		{ name: "Privacy Policy", href: "/privacy-policy" },
 	]
 
 	return (
