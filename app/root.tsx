@@ -133,8 +133,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 	)
 }
 
+export type RootLoader = typeof loader
+
 export function Layout({ children }: { children: React.ReactNode }) {
-	const rootLoaderData = useRouteLoaderData<typeof loader>("root")
+	const rootLoaderData = useRouteLoaderData<RootLoader>("root")
 
 	const { user } = rootLoaderData ?? {}
 
