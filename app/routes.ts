@@ -19,5 +19,6 @@ export default [
 	route("job-seeker-profile", "routes/job-seeker-profile.tsx", [
 		route("add-education", "routes/add-education.tsx"),
 		route("add-employment", "routes/add-employment.tsx"),
+		route("add-certification", "routes/add-certification.tsx"),
 	]),
 ] satisfies RouteConfig

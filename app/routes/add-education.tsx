@@ -1,4 +1,9 @@
-import { getFormProps, getInputProps, useForm } from "@conform-to/react"
+import {
+	type SubmissionResult,
+	getFormProps,
+	getInputProps,
+	useForm,
+} from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
 import { EditorProvider } from "@portabletext/editor"
 import { LoaderCircleIcon } from "lucide-react"
@@ -82,19 +87,7 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 	const [open, setOpen] = useState(true)
 	const navigate = useNavigate()
 	const isDesktop = useMediaQuery("(min-width: 768px)")
-	const navigation = useNavigation()
-
-	const isSubmitting = navigation.state === "submitting"
 	const { lastResult } = actionData ?? {}
-
-	const [form, fields] = useForm({
-		lastResult,
-		onValidate({ formData }) {
-			return parseWithZod(formData, { schema: educationEntrySchema })
-		},
-		shouldValidate: "onSubmit",
-		shouldRevalidate: "onInput",
-	})
 
 	if (isDesktop) {
 		return (
@@ -120,110 +113,7 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 							Please fill out the required fields.
 						</DialogDescription>
 					</DialogHeader>
-					<Form
-						method="post"
-						action="/job-seeker-profile/add-education"
-						className="space-y-5"
-						{...getFormProps(form)}
-					>
-						<div className="space-y-1">
-							<Label htmlFor={fields.institution.id}>Institution*</Label>
-							<Input
-								{...getInputProps(fields.institution, { type: "text" })}
-								placeholder="University of Texas"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.institution.errorId}
-							>
-								{fields.institution.errors}
-							</div>
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.fieldOfStudy.id}>Field of Study*</Label>
-							<Input
-								{...getInputProps(fields.fieldOfStudy, { type: "text" })}
-								placeholder="Psychology"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.fieldOfStudy.errorId}
-							>
-								{fields.fieldOfStudy.errors}
-							</div>
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.degree.id}>Degree</Label>
-							<Input
-								{...getInputProps(fields.degree, { type: "text" })}
-								placeholder="Bachelor's of Science"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.degree.errorId}
-							>
-								{fields.degree.errors}
-							</div>
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.gpa.id}>GPA</Label>
-							<Input
-								{...getInputProps(fields.gpa, { type: "number" })}
-								placeholder="3.5"
-								className="max-w-64"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.gpa.errorId}
-							>
-								{fields.gpa.errors}
-							</div>
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.graduationDate.id}>Graduation Date</Label>
-							<Input
-								{...getInputProps(fields.graduationDate, {
-									type: "number",
-								})}
-								placeholder="2020"
-								className="max-w-64"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.graduationDate.errorId}
-							>
-								{fields.graduationDate.errors}
-							</div>
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.graduationDate.id}>Description</Label>
-							<div>
-								<EditorProvider
-									initialConfig={{
-										schemaDefinition,
-									}}
-								>
-									<RichTextField meta={fields.description} />
-								</EditorProvider>
-							</div>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.description.errorId}
-							>
-								{fields.description.errors}
-							</div>
-						</div>
-						<Button type="submit" className="w-full" disabled={isSubmitting}>
-							{isSubmitting ? (
-								<>
-									<LoaderCircleIcon className="animate-spin" />
-									Adding...
-								</>
-							) : (
-								"Add"
-							)}
-						</Button>
-					</Form>
+					<AddEducationForm lastResult={lastResult} />
 				</DialogContent>
 			</Dialog>
 		)
@@ -251,115 +141,132 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 				</DrawerHeader>
 				<ScrollArea className="overflow-y-auto">
 					<div className="p-4">
-						<Form
-							method="post"
-							action="/job-seeker-profile/add-education"
-							className="space-y-5"
-							{...getFormProps(form)}
-						>
-							<div className="space-y-1">
-								<Label htmlFor={fields.institution.id}>Institution*</Label>
-								<Input
-									{...getInputProps(fields.institution, { type: "text" })}
-									placeholder="University of Texas"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.institution.errorId}
-								>
-									{fields.institution.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.fieldOfStudy.id}>Field of Study*</Label>
-								<Input
-									{...getInputProps(fields.fieldOfStudy, { type: "text" })}
-									placeholder="Psychology"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.fieldOfStudy.errorId}
-								>
-									{fields.fieldOfStudy.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.degree.id}>Degree</Label>
-								<Input
-									{...getInputProps(fields.degree, { type: "text" })}
-									placeholder="Bachelor's of Science"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.degree.errorId}
-								>
-									{fields.degree.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.gpa.id}>GPA</Label>
-								<Input
-									{...getInputProps(fields.gpa, { type: "number" })}
-									placeholder="3.5"
-									className="max-w-64"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.gpa.errorId}
-								>
-									{fields.gpa.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.graduationDate.id}>
-									Graduation Date
-								</Label>
-								<Input
-									{...getInputProps(fields.graduationDate, {
-										type: "number",
-									})}
-									placeholder="2020"
-									className="max-w-64"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.graduationDate.errorId}
-								>
-									{fields.graduationDate.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.graduationDate.id}>Description</Label>
-								<div>
-									<EditorProvider
-										initialConfig={{
-											schemaDefinition,
-										}}
-									>
-										<RichTextField meta={fields.description} />
-									</EditorProvider>
-								</div>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.graduationDate.errorId}
-								>
-									{fields.graduationDate.errors}
-								</div>
-							</div>
-							<Button type="submit" className="w-full" disabled={isSubmitting}>
-								{isSubmitting ? (
-									<>
-										<LoaderCircleIcon className="animate-spin" />
-										Adding...
-									</>
-								) : (
-									"Add"
-								)}
-							</Button>
-						</Form>
+						<AddEducationForm lastResult={lastResult} />
 					</div>
 				</ScrollArea>
 			</DrawerContent>
 		</Drawer>
+	)
+}
+
+function AddEducationForm({
+	lastResult,
+}: {
+	lastResult: SubmissionResult<string[]> | undefined
+}) {
+	const navigation = useNavigation()
+	const isSubmitting = navigation.state === "submitting"
+
+	const [form, fields] = useForm({
+		lastResult,
+		onValidate({ formData }) {
+			return parseWithZod(formData, { schema: educationEntrySchema })
+		},
+		shouldValidate: "onSubmit",
+		shouldRevalidate: "onInput",
+	})
+
+	return (
+		<Form
+			method="post"
+			action="/job-seeker-profile/add-education"
+			className="space-y-5"
+			{...getFormProps(form)}
+		>
+			<div className="space-y-1">
+				<Label htmlFor={fields.institution.id}>Institution*</Label>
+				<Input
+					{...getInputProps(fields.institution, { type: "text" })}
+					placeholder="University of Texas"
+				/>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.institution.errorId}
+				>
+					{fields.institution.errors}
+				</div>
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.fieldOfStudy.id}>Field of Study*</Label>
+				<Input
+					{...getInputProps(fields.fieldOfStudy, { type: "text" })}
+					placeholder="Psychology"
+				/>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.fieldOfStudy.errorId}
+				>
+					{fields.fieldOfStudy.errors}
+				</div>
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.degree.id}>Degree</Label>
+				<Input
+					{...getInputProps(fields.degree, { type: "text" })}
+					placeholder="Bachelor's of Science"
+				/>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.degree.errorId}
+				>
+					{fields.degree.errors}
+				</div>
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.gpa.id}>GPA</Label>
+				<Input
+					{...getInputProps(fields.gpa, { type: "number" })}
+					placeholder="3.5"
+					className="max-w-64"
+				/>
+				<div className="pl-1 text-destructive text-xs" id={fields.gpa.errorId}>
+					{fields.gpa.errors}
+				</div>
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.graduationDate.id}>Graduation Date</Label>
+				<Input
+					{...getInputProps(fields.graduationDate, {
+						type: "number",
+					})}
+					placeholder="2020"
+					className="max-w-64"
+				/>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.graduationDate.errorId}
+				>
+					{fields.graduationDate.errors}
+				</div>
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.graduationDate.id}>Description</Label>
+				<div>
+					<EditorProvider
+						initialConfig={{
+							schemaDefinition,
+						}}
+					>
+						<RichTextField meta={fields.description} />
+					</EditorProvider>
+				</div>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.description.errorId}
+				>
+					{fields.description.errors}
+				</div>
+			</div>
+			<Button type="submit" className="w-full" disabled={isSubmitting}>
+				{isSubmitting ? (
+					<>
+						<LoaderCircleIcon className="animate-spin" />
+						Adding...
+					</>
+				) : (
+					"Add"
+				)}
+			</Button>
+		</Form>
 	)
 }

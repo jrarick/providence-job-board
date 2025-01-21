@@ -1,4 +1,9 @@
-import { getFormProps, getInputProps, useForm } from "@conform-to/react"
+import {
+	type SubmissionResult,
+	getFormProps,
+	getInputProps,
+	useForm,
+} from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
 import { EditorProvider } from "@portabletext/editor"
 import { LoaderCircleIcon } from "lucide-react"
@@ -87,19 +92,7 @@ export default function AddEmployment({ actionData }: Route.ComponentProps) {
 	const [open, setOpen] = useState(true)
 	const navigate = useNavigate()
 	const isDesktop = useMediaQuery("(min-width: 768px)")
-	const navigation = useNavigation()
-
-	const isSubmitting = navigation.state === "submitting"
 	const { lastResult } = actionData ?? {}
-
-	const [form, fields] = useForm({
-		lastResult,
-		onValidate({ formData }) {
-			return parseWithZod(formData, { schema: employmentEntrySchema })
-		},
-		shouldValidate: "onSubmit",
-		shouldRevalidate: "onInput",
-	})
 
 	if (isDesktop) {
 		return (
@@ -125,135 +118,7 @@ export default function AddEmployment({ actionData }: Route.ComponentProps) {
 							Please fill out the required fields.
 						</DialogDescription>
 					</DialogHeader>
-					<Form
-						method="post"
-						action="/job-seeker-profile/add-employment"
-						className="space-y-5"
-						{...getFormProps(form)}
-					>
-						<div className="space-y-1">
-							<Label htmlFor={fields.title.id}>Title*</Label>
-							<Input
-								{...getInputProps(fields.title, { type: "text" })}
-								placeholder="Store Manager"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.title.errorId}
-							>
-								{fields.title.errors}
-							</div>
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.companyName.id}>Company Name*</Label>
-							<Input
-								{...getInputProps(fields.companyName, { type: "text" })}
-								placeholder="Macy's"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.companyName.errorId}
-							>
-								{fields.companyName.errors}
-							</div>
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.employmentType.id}>Employment Type*</Label>
-							<SelectField
-								meta={fields.employmentType}
-								items={[...EMPLOYMENT_TYPE]}
-								placeholder="Select"
-								triggerClassName="w-full"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.employmentType.errorId}
-							>
-								{fields.employmentType.errors}
-							</div>
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.location.id}>Location</Label>
-							<Input
-								{...getInputProps(fields.location, { type: "text" })}
-								placeholder="Atlanta, GA"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.location.errorId}
-							>
-								{fields.location.errors}
-							</div>
-						</div>
-						<div className="flex items-center gap-2 pt-6 pb-2">
-							<CheckboxField meta={fields.isCurrent} />
-							<Label htmlFor={fields.isCurrent.id}>Current Employer?</Label>
-						</div>
-						<div className="grid grid-cols-2 gap-4">
-							<div className="space-y-1">
-								<Label htmlFor={fields.startDate.id}>Start Date*</Label>
-								<Input
-									{...getInputProps(fields.startDate, {
-										type: "number",
-									})}
-									placeholder="2015"
-									className="max-w-64"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.startDate.errorId}
-								>
-									{fields.startDate.errors}
-								</div>
-							</div>
-							{!fields.isCurrent.value && (
-								<div className="space-y-1">
-									<Label htmlFor={fields.endDate.id}>End Date</Label>
-									<Input
-										{...getInputProps(fields.endDate, {
-											type: "number",
-										})}
-										placeholder="2018"
-										className="max-w-64"
-									/>
-									<div
-										className="pl-1 text-destructive text-xs"
-										id={fields.endDate.errorId}
-									>
-										{fields.endDate.errors}
-									</div>
-								</div>
-							)}
-						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.description.id}>Description</Label>
-							<div>
-								<EditorProvider
-									initialConfig={{
-										schemaDefinition,
-									}}
-								>
-									<RichTextField meta={fields.description} />
-								</EditorProvider>
-							</div>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.description.errorId}
-							>
-								{fields.description.errors}
-							</div>
-						</div>
-						<Button type="submit" className="w-full" disabled={isSubmitting}>
-							{isSubmitting ? (
-								<>
-									<LoaderCircleIcon className="animate-spin" />
-									Adding...
-								</>
-							) : (
-								"Add"
-							)}
-						</Button>
-					</Form>
+					<AddEmploymentForm lastResult={lastResult} />
 				</DialogContent>
 			</Dialog>
 		)
@@ -281,140 +146,160 @@ export default function AddEmployment({ actionData }: Route.ComponentProps) {
 				</DrawerHeader>
 				<ScrollArea className="overflow-y-auto">
 					<div className="p-4">
-						<Form
-							method="post"
-							action="/job-seeker-profile/add-employment"
-							className="space-y-5"
-							{...getFormProps(form)}
-						>
-							<div className="space-y-1">
-								<Label htmlFor={fields.title.id}>Title*</Label>
-								<Input
-									{...getInputProps(fields.title, { type: "text" })}
-									placeholder="Store Manager"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.title.errorId}
-								>
-									{fields.title.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.companyName.id}>Company Name*</Label>
-								<Input
-									{...getInputProps(fields.companyName, { type: "text" })}
-									placeholder="Macy's"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.companyName.errorId}
-								>
-									{fields.companyName.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.employmentType.id}>
-									Employment Type*
-								</Label>
-								<SelectField
-									meta={fields.employmentType}
-									items={[...EMPLOYMENT_TYPE]}
-									placeholder="Select"
-									triggerClassName="w-full sm:max-w-sm"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.employmentType.errorId}
-								>
-									{fields.employmentType.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.location.id}>Location</Label>
-								<Input
-									{...getInputProps(fields.location, { type: "text" })}
-									placeholder="Atlanta, GA"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.location.errorId}
-								>
-									{fields.location.errors}
-								</div>
-							</div>
-							<div className="flex items-center gap-2 pt-6 pb-2">
-								<CheckboxField meta={fields.isCurrent} />
-								<Label htmlFor={fields.isCurrent.id}>Current Employer?</Label>
-							</div>
-							<div className="grid grid-cols-2 gap-4">
-								<div className="space-y-1">
-									<Label htmlFor={fields.startDate.id}>Start Date*</Label>
-									<Input
-										{...getInputProps(fields.startDate, {
-											type: "number",
-										})}
-										placeholder="2015"
-										className="max-w-64"
-									/>
-									<div
-										className="pl-1 text-destructive text-xs"
-										id={fields.startDate.errorId}
-									>
-										{fields.startDate.errors}
-									</div>
-								</div>
-								{!fields.isCurrent.value && (
-									<div className="space-y-1">
-										<Label htmlFor={fields.endDate.id}>End Date</Label>
-										<Input
-											{...getInputProps(fields.endDate, {
-												type: "number",
-											})}
-											placeholder="2018"
-											className="max-w-64"
-										/>
-										<div
-											className="pl-1 text-destructive text-xs"
-											id={fields.endDate.errorId}
-										>
-											{fields.endDate.errors}
-										</div>
-									</div>
-								)}
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.description.id}>Description</Label>
-								<div>
-									<EditorProvider
-										initialConfig={{
-											schemaDefinition,
-										}}
-									>
-										<RichTextField meta={fields.description} />
-									</EditorProvider>
-								</div>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.description.errorId}
-								>
-									{fields.description.errors}
-								</div>
-							</div>
-							<Button type="submit" className="w-full" disabled={isSubmitting}>
-								{isSubmitting ? (
-									<>
-										<LoaderCircleIcon className="animate-spin" />
-										Adding...
-									</>
-								) : (
-									"Add"
-								)}
-							</Button>
-						</Form>
+						<AddEmploymentForm lastResult={lastResult} />
 					</div>
 				</ScrollArea>
 			</DrawerContent>
 		</Drawer>
+	)
+}
+
+function AddEmploymentForm({
+	lastResult,
+}: {
+	lastResult: SubmissionResult<string[]> | undefined
+}) {
+	const navigation = useNavigation()
+	const isSubmitting = navigation.state === "submitting"
+
+	const [form, fields] = useForm({
+		lastResult,
+		onValidate({ formData }) {
+			return parseWithZod(formData, { schema: employmentEntrySchema })
+		},
+		shouldValidate: "onSubmit",
+		shouldRevalidate: "onInput",
+	})
+
+	return (
+		<Form
+			method="post"
+			action="/job-seeker-profile/add-employment"
+			className="space-y-5"
+			{...getFormProps(form)}
+		>
+			<div className="space-y-1">
+				<Label htmlFor={fields.title.id}>Title*</Label>
+				<Input
+					{...getInputProps(fields.title, { type: "text" })}
+					placeholder="Store Manager"
+				/>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.title.errorId}
+				>
+					{fields.title.errors}
+				</div>
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.companyName.id}>Company Name*</Label>
+				<Input
+					{...getInputProps(fields.companyName, { type: "text" })}
+					placeholder="Macy's"
+				/>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.companyName.errorId}
+				>
+					{fields.companyName.errors}
+				</div>
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.employmentType.id}>Employment Type*</Label>
+				<SelectField
+					meta={fields.employmentType}
+					items={[...EMPLOYMENT_TYPE]}
+					placeholder="Select"
+					triggerClassName="w-full"
+				/>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.employmentType.errorId}
+				>
+					{fields.employmentType.errors}
+				</div>
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.location.id}>Location</Label>
+				<Input
+					{...getInputProps(fields.location, { type: "text" })}
+					placeholder="Atlanta, GA"
+				/>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.location.errorId}
+				>
+					{fields.location.errors}
+				</div>
+			</div>
+			<div className="flex items-center gap-2 pt-6 pb-2">
+				<CheckboxField meta={fields.isCurrent} />
+				<Label htmlFor={fields.isCurrent.id}>Current Employer?</Label>
+			</div>
+			<div className="grid grid-cols-2 gap-4">
+				<div className="space-y-1">
+					<Label htmlFor={fields.startDate.id}>Start Date*</Label>
+					<Input
+						{...getInputProps(fields.startDate, {
+							type: "number",
+						})}
+						placeholder="2015"
+						className="max-w-64"
+					/>
+					<div
+						className="pl-1 text-destructive text-xs"
+						id={fields.startDate.errorId}
+					>
+						{fields.startDate.errors}
+					</div>
+				</div>
+				{!fields.isCurrent.value && (
+					<div className="space-y-1">
+						<Label htmlFor={fields.endDate.id}>End Date</Label>
+						<Input
+							{...getInputProps(fields.endDate, {
+								type: "number",
+							})}
+							placeholder="2018"
+							className="max-w-64"
+						/>
+						<div
+							className="pl-1 text-destructive text-xs"
+							id={fields.endDate.errorId}
+						>
+							{fields.endDate.errors}
+						</div>
+					</div>
+				)}
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor={fields.description.id}>Description</Label>
+				<div>
+					<EditorProvider
+						initialConfig={{
+							schemaDefinition,
+						}}
+					>
+						<RichTextField meta={fields.description} />
+					</EditorProvider>
+				</div>
+				<div
+					className="pl-1 text-destructive text-xs"
+					id={fields.description.errorId}
+				>
+					{fields.description.errors}
+				</div>
+			</div>
+			<Button type="submit" className="w-full" disabled={isSubmitting}>
+				{isSubmitting ? (
+					<>
+						<LoaderCircleIcon className="animate-spin" />
+						Adding...
+					</>
+				) : (
+					"Add"
+				)}
+			</Button>
+		</Form>
 	)
 }

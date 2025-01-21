@@ -35,7 +35,7 @@ export default function JobSeekerProfile({ actionData }: Route.ComponentProps) {
 	return (
 		<>
 			<Container className="max-w-3xl">
-				<div className="container mx-auto p-6">
+				<div className="container mx-auto">
 					<Card className="mx-auto w-full max-w-3xl">
 						<CardHeader className="flex flex-row items-center gap-4">
 							<Avatar className="h-24 w-24">
