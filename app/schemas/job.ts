@@ -56,7 +56,7 @@ export const jobSchema = z
 		},
 		{
 			message: "Salary Min cannot be greater than Salary Max",
-			path: ["salary_min"],
+			path: ["salaryMin"],
 		},
 	)
 

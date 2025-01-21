@@ -16,4 +16,5 @@ export const educationEntrySchema = z.object({
 export type EducationEntry = z.infer<typeof educationEntrySchema> & {
 	id: number
 	jobSeekerProfileId: number
+	profileId: string
 }

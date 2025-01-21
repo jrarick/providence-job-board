@@ -4,7 +4,9 @@ import { EditorProvider } from "@portabletext/editor"
 import { LoaderCircleIcon } from "lucide-react"
 import { useState } from "react"
 import { Form, redirect, useNavigate, useNavigation } from "react-router"
+import { CheckboxField } from "~/components/conform-fields/checkbox-field"
 import { RichTextField } from "~/components/conform-fields/rich-text-field"
+import { SelectField } from "~/components/conform-fields/select-field"
 import { schemaDefinition } from "~/components/rich-text-editor/utils"
 import { Button } from "~/components/ui/button"
 import {
@@ -24,14 +26,15 @@ import {
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { ScrollArea } from "~/components/ui/scroll-area"
+import EMPLOYMENT_TYPE from "~/constants/employment-type"
 import { createClient } from "~/db/supabase.server"
 import { useMediaQuery } from "~/hooks/use-media-query"
-import { educationEntrySchema } from "~/schemas/education-entry"
-import type { Route } from "./+types/add-education"
+import { employmentEntrySchema } from "~/schemas/employment-entry"
+import type { Route } from "./+types/add-employment"
 
 export async function action({ request }: Route.ActionArgs) {
 	const formData = await request.formData()
-	const submission = parseWithZod(formData, { schema: educationEntrySchema })
+	const submission = parseWithZod(formData, { schema: employmentEntrySchema })
 
 	if (submission.status !== "success") {
 		return { lastResult: submission.reply() }
@@ -57,20 +60,22 @@ export async function action({ request }: Route.ActionArgs) {
 		throw new Error("Job seeker profile not found")
 	}
 
-	const { error, data } = await supabase.from("education_entries").insert([
+	const { error, data } = await supabase.from("employment_entries").insert([
 		{
-			institution: submission.value.institution,
-			degree: submission.value.degree,
-			field_of_study: submission.value.fieldOfStudy,
-			gpa: submission.value.gpa,
-			graduation_date: submission.value.graduationDate,
+			title: submission.value.title,
+			company_name: submission.value.companyName,
+			employment_type: submission.value.employmentType,
+			location: submission.value.location,
+			is_current: submission.value.isCurrent,
+			start_date: submission.value.startDate,
+			end_date: submission.value.endDate,
 			description: submission.value.description,
 			job_seeker_profile_id: jobSeekerProfile.data.id,
 		},
 	])
 
 	if (error) {
-		throw new Error(`Error creating education entry: ${error.message}`)
+		throw new Error(`Error creating employment entry: ${error.message}`)
 	}
 
 	return redirect("/job-seeker-profile", {
@@ -78,7 +83,7 @@ export async function action({ request }: Route.ActionArgs) {
 	})
 }
 
-export default function AddEducation({ actionData }: Route.ComponentProps) {
+export default function AddEmployment({ actionData }: Route.ComponentProps) {
 	const [open, setOpen] = useState(true)
 	const navigate = useNavigate()
 	const isDesktop = useMediaQuery("(min-width: 768px)")
@@ -90,7 +95,7 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 	const [form, fields] = useForm({
 		lastResult,
 		onValidate({ formData }) {
-			return parseWithZod(formData, { schema: educationEntrySchema })
+			return parseWithZod(formData, { schema: employmentEntrySchema })
 		},
 		shouldValidate: "onSubmit",
 		shouldRevalidate: "onInput",
@@ -115,88 +120,113 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 			>
 				<DialogContent className="max-h-[min(700px,85dvh)] overflow-y-auto">
 					<DialogHeader>
-						<DialogTitle className="sm:text-center">Add Education</DialogTitle>
+						<DialogTitle className="sm:text-center">Add Employment</DialogTitle>
 						<DialogDescription className="sm:text-center">
 							Please fill out the required fields.
 						</DialogDescription>
 					</DialogHeader>
 					<Form
 						method="post"
-						action="/job-seeker-profile/add-education"
+						action="/job-seeker-profile/add-employment"
 						className="space-y-5"
 						{...getFormProps(form)}
 					>
 						<div className="space-y-1">
-							<Label htmlFor={fields.institution.id}>Institution*</Label>
+							<Label htmlFor={fields.title.id}>Title*</Label>
 							<Input
-								{...getInputProps(fields.institution, { type: "text" })}
-								placeholder="University of Texas"
+								{...getInputProps(fields.title, { type: "text" })}
+								placeholder="Store Manager"
 							/>
 							<div
 								className="pl-1 text-destructive text-xs"
-								id={fields.institution.errorId}
+								id={fields.title.errorId}
 							>
-								{fields.institution.errors}
+								{fields.title.errors}
 							</div>
 						</div>
 						<div className="space-y-1">
-							<Label htmlFor={fields.fieldOfStudy.id}>Field of Study*</Label>
+							<Label htmlFor={fields.companyName.id}>Company Name*</Label>
 							<Input
-								{...getInputProps(fields.fieldOfStudy, { type: "text" })}
-								placeholder="Psychology"
+								{...getInputProps(fields.companyName, { type: "text" })}
+								placeholder="Macy's"
 							/>
 							<div
 								className="pl-1 text-destructive text-xs"
-								id={fields.fieldOfStudy.errorId}
+								id={fields.companyName.errorId}
 							>
-								{fields.fieldOfStudy.errors}
+								{fields.companyName.errors}
 							</div>
 						</div>
 						<div className="space-y-1">
-							<Label htmlFor={fields.degree.id}>Degree</Label>
-							<Input
-								{...getInputProps(fields.degree, { type: "text" })}
-								placeholder="Bachelor's of Science"
+							<Label htmlFor={fields.employmentType.id}>Employment Type*</Label>
+							<SelectField
+								meta={fields.employmentType}
+								items={[...EMPLOYMENT_TYPE]}
+								placeholder="Select"
+								triggerClassName="w-full"
 							/>
 							<div
 								className="pl-1 text-destructive text-xs"
-								id={fields.degree.errorId}
+								id={fields.employmentType.errorId}
 							>
-								{fields.degree.errors}
+								{fields.employmentType.errors}
 							</div>
 						</div>
 						<div className="space-y-1">
-							<Label htmlFor={fields.gpa.id}>GPA</Label>
+							<Label htmlFor={fields.location.id}>Location</Label>
 							<Input
-								{...getInputProps(fields.gpa, { type: "number" })}
-								placeholder="3.5"
-								className="max-w-64"
+								{...getInputProps(fields.location, { type: "text" })}
+								placeholder="Atlanta, GA"
 							/>
 							<div
 								className="pl-1 text-destructive text-xs"
-								id={fields.gpa.errorId}
+								id={fields.location.errorId}
 							>
-								{fields.gpa.errors}
+								{fields.location.errors}
 							</div>
 						</div>
-						<div className="space-y-1">
-							<Label htmlFor={fields.graduationDate.id}>Graduation Date</Label>
-							<Input
-								{...getInputProps(fields.graduationDate, {
-									type: "number",
-								})}
-								placeholder="2020"
-								className="max-w-64"
-							/>
-							<div
-								className="pl-1 text-destructive text-xs"
-								id={fields.graduationDate.errorId}
-							>
-								{fields.graduationDate.errors}
+						<div className="flex items-center gap-2 pt-6 pb-2">
+							<CheckboxField meta={fields.isCurrent} />
+							<Label htmlFor={fields.isCurrent.id}>Current Employer?</Label>
+						</div>
+						<div className="grid grid-cols-2 gap-4">
+							<div className="space-y-1">
+								<Label htmlFor={fields.startDate.id}>Start Date*</Label>
+								<Input
+									{...getInputProps(fields.startDate, {
+										type: "number",
+									})}
+									placeholder="2015"
+									className="max-w-64"
+								/>
+								<div
+									className="pl-1 text-destructive text-xs"
+									id={fields.startDate.errorId}
+								>
+									{fields.startDate.errors}
+								</div>
 							</div>
+							{!fields.isCurrent.value && (
+								<div className="space-y-1">
+									<Label htmlFor={fields.endDate.id}>End Date</Label>
+									<Input
+										{...getInputProps(fields.endDate, {
+											type: "number",
+										})}
+										placeholder="2018"
+										className="max-w-64"
+									/>
+									<div
+										className="pl-1 text-destructive text-xs"
+										id={fields.endDate.errorId}
+									>
+										{fields.endDate.errors}
+									</div>
+								</div>
+							)}
 						</div>
 						<div className="space-y-1">
-							<Label htmlFor={fields.graduationDate.id}>Description</Label>
+							<Label htmlFor={fields.description.id}>Description</Label>
 							<div>
 								<EditorProvider
 									initialConfig={{
@@ -244,7 +274,7 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 		>
 			<DrawerContent className="max-h-[75lvh]">
 				<DrawerHeader className="border-border border-b text-left">
-					<DrawerTitle className="text-xl">Add Education</DrawerTitle>
+					<DrawerTitle className="text-xl">Add Employment</DrawerTitle>
 					<DrawerDescription className="text-base">
 						Please fill out the required fields.
 					</DrawerDescription>
@@ -253,83 +283,108 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 					<div className="p-4">
 						<Form
 							method="post"
-							action="/job-seeker-profile/add-education"
+							action="/job-seeker-profile/add-employment"
 							className="space-y-5"
 							{...getFormProps(form)}
 						>
 							<div className="space-y-1">
-								<Label htmlFor={fields.institution.id}>Institution*</Label>
+								<Label htmlFor={fields.title.id}>Title*</Label>
 								<Input
-									{...getInputProps(fields.institution, { type: "text" })}
-									placeholder="University of Texas"
+									{...getInputProps(fields.title, { type: "text" })}
+									placeholder="Store Manager"
 								/>
 								<div
 									className="pl-1 text-destructive text-xs"
-									id={fields.institution.errorId}
+									id={fields.title.errorId}
 								>
-									{fields.institution.errors}
+									{fields.title.errors}
 								</div>
 							</div>
 							<div className="space-y-1">
-								<Label htmlFor={fields.fieldOfStudy.id}>Field of Study*</Label>
+								<Label htmlFor={fields.companyName.id}>Company Name*</Label>
 								<Input
-									{...getInputProps(fields.fieldOfStudy, { type: "text" })}
-									placeholder="Psychology"
+									{...getInputProps(fields.companyName, { type: "text" })}
+									placeholder="Macy's"
 								/>
 								<div
 									className="pl-1 text-destructive text-xs"
-									id={fields.fieldOfStudy.errorId}
+									id={fields.companyName.errorId}
 								>
-									{fields.fieldOfStudy.errors}
+									{fields.companyName.errors}
 								</div>
 							</div>
 							<div className="space-y-1">
-								<Label htmlFor={fields.degree.id}>Degree</Label>
-								<Input
-									{...getInputProps(fields.degree, { type: "text" })}
-									placeholder="Bachelor's of Science"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.degree.errorId}
-								>
-									{fields.degree.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.gpa.id}>GPA</Label>
-								<Input
-									{...getInputProps(fields.gpa, { type: "number" })}
-									placeholder="3.5"
-									className="max-w-64"
-								/>
-								<div
-									className="pl-1 text-destructive text-xs"
-									id={fields.gpa.errorId}
-								>
-									{fields.gpa.errors}
-								</div>
-							</div>
-							<div className="space-y-1">
-								<Label htmlFor={fields.graduationDate.id}>
-									Graduation Date
+								<Label htmlFor={fields.employmentType.id}>
+									Employment Type*
 								</Label>
-								<Input
-									{...getInputProps(fields.graduationDate, {
-										type: "number",
-									})}
-									placeholder="2020"
-									className="max-w-64"
+								<SelectField
+									meta={fields.employmentType}
+									items={[...EMPLOYMENT_TYPE]}
+									placeholder="Select"
+									triggerClassName="w-full sm:max-w-sm"
 								/>
 								<div
 									className="pl-1 text-destructive text-xs"
-									id={fields.graduationDate.errorId}
+									id={fields.employmentType.errorId}
 								>
-									{fields.graduationDate.errors}
+									{fields.employmentType.errors}
 								</div>
 							</div>
 							<div className="space-y-1">
-								<Label htmlFor={fields.graduationDate.id}>Description</Label>
+								<Label htmlFor={fields.location.id}>Location</Label>
+								<Input
+									{...getInputProps(fields.location, { type: "text" })}
+									placeholder="Atlanta, GA"
+								/>
+								<div
+									className="pl-1 text-destructive text-xs"
+									id={fields.location.errorId}
+								>
+									{fields.location.errors}
+								</div>
+							</div>
+							<div className="flex items-center gap-2 pt-6 pb-2">
+								<CheckboxField meta={fields.isCurrent} />
+								<Label htmlFor={fields.isCurrent.id}>Current Employer?</Label>
+							</div>
+							<div className="grid grid-cols-2 gap-4">
+								<div className="space-y-1">
+									<Label htmlFor={fields.startDate.id}>Start Date*</Label>
+									<Input
+										{...getInputProps(fields.startDate, {
+											type: "number",
+										})}
+										placeholder="2015"
+										className="max-w-64"
+									/>
+									<div
+										className="pl-1 text-destructive text-xs"
+										id={fields.startDate.errorId}
+									>
+										{fields.startDate.errors}
+									</div>
+								</div>
+								{!fields.isCurrent.value && (
+									<div className="space-y-1">
+										<Label htmlFor={fields.endDate.id}>End Date</Label>
+										<Input
+											{...getInputProps(fields.endDate, {
+												type: "number",
+											})}
+											placeholder="2018"
+											className="max-w-64"
+										/>
+										<div
+											className="pl-1 text-destructive text-xs"
+											id={fields.endDate.errorId}
+										>
+											{fields.endDate.errors}
+										</div>
+									</div>
+								)}
+							</div>
+							<div className="space-y-1">
+								<Label htmlFor={fields.description.id}>Description</Label>
 								<div>
 									<EditorProvider
 										initialConfig={{
@@ -341,9 +396,9 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 								</div>
 								<div
 									className="pl-1 text-destructive text-xs"
-									id={fields.graduationDate.errorId}
+									id={fields.description.errorId}
 								>
-									{fields.graduationDate.errors}
+									{fields.description.errors}
 								</div>
 							</div>
 							<Button type="submit" className="w-full" disabled={isSubmitting}>

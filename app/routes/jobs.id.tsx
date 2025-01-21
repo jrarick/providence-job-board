@@ -249,7 +249,7 @@ export default function JobsId({ loaderData }: Route.ComponentProps) {
 						{job.companyName}
 					</DrawerDescription>
 				</DrawerHeader>
-				<ScrollArea>
+				<ScrollArea className="overflow-y-auto">
 					<div className="p-4">
 						<h2 className="my-4 font-display font-medium text-2xl text-foreground">
 							Details

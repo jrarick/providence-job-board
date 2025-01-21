@@ -1,27 +1,14 @@
-import {
-	type FieldMetadata,
-	getFormProps,
-	getInputProps,
-	unstable_useControl as useControl,
-	useForm,
-} from "@conform-to/react"
+import { getFormProps, getInputProps, useForm } from "@conform-to/react"
 import { parseWithZod } from "@conform-to/zod"
-import {
-	EditorEventListener,
-	EditorProvider,
-	PortableTextEditable,
-	useEditor,
-} from "@portabletext/editor"
+import { EditorProvider } from "@portabletext/editor"
 import { LoaderCircleIcon } from "lucide-react"
-import { type ComponentProps, type ComponentRef, useRef } from "react"
 import { Form, Link, useNavigation } from "react-router"
 import { ClientOnly } from "~/components/client-only"
-import { Toolbar } from "~/components/rich-text-editor/toolbar"
-import {
-	renderDecorator,
-	renderStyle,
-	schemaDefinition,
-} from "~/components/rich-text-editor/utils"
+import { MultipleSelectorField } from "~/components/conform-fields/multiple-selector-field"
+import { RadioGroupField } from "~/components/conform-fields/radio-group-field"
+import { RichTextField } from "~/components/conform-fields/rich-text-field"
+import { SelectField } from "~/components/conform-fields/select-field"
+import { schemaDefinition } from "~/components/rich-text-editor/utils"
 import Container from "~/components/shell/container"
 import { Button, buttonVariants } from "~/components/ui/button"
 import {
@@ -34,15 +21,6 @@ import {
 } from "~/components/ui/card"
 import { CurrencyInput, Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
-import MultipleSelector from "~/components/ui/multiselect"
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "~/components/ui/select"
 import EMPLOYMENT_TYPE from "~/constants/employment-type"
 import JOB_CATEGORY from "~/constants/job-category"
 import SALARY_TYPE from "~/constants/salary-type"
@@ -461,200 +439,5 @@ export default function PostAJob({ actionData }: Route.ComponentProps) {
 				</CardFooter>
 			</Card>
 		</Container>
-	)
-}
-
-function SelectField({
-	meta,
-	items,
-	placeholder,
-	triggerClassName,
-	...props
-}: {
-	meta: FieldMetadata<string>
-	items: Array<string>
-	placeholder?: string
-	triggerClassName?: string
-} & ComponentProps<typeof Select>) {
-	const selectRef = useRef<ComponentRef<typeof SelectTrigger>>(null)
-	const control = useControl(meta)
-
-	return (
-		<>
-			<select
-				name={meta.name}
-				defaultValue={meta.initialValue ?? ""}
-				className="sr-only"
-				ref={control.register}
-				aria-hidden
-				tabIndex={-1}
-				onFocus={() => {
-					selectRef.current?.focus()
-				}}
-			>
-				<option value="" />
-				{items.map((option) => (
-					<option key={option} value={option} />
-				))}
-			</select>
-
-			<Select
-				{...props}
-				value={control.value ?? ""}
-				onValueChange={control.change}
-				onOpenChange={(open) => {
-					if (!open) {
-						control.blur()
-					}
-				}}
-			>
-				<SelectTrigger className={triggerClassName}>
-					<SelectValue placeholder={placeholder} />
-				</SelectTrigger>
-				<SelectContent>
-					{items.map((item) => {
-						return (
-							<SelectItem key={item} value={item}>
-								{item}
-							</SelectItem>
-						)
-					})}
-				</SelectContent>
-			</Select>
-		</>
-	)
-}
-
-function RadioGroupField({
-	meta,
-	items,
-}: {
-	meta: FieldMetadata<string>
-	items: Array<string>
-}) {
-	const radioGroupRef = useRef<ComponentRef<typeof RadioGroup>>(null)
-	const control = useControl(meta)
-
-	return (
-		<>
-			<input
-				ref={control.register}
-				name={meta.name}
-				defaultValue={meta.initialValue}
-				aria-hidden
-				tabIndex={-1}
-				className="sr-only"
-				onFocus={() => radioGroupRef.current?.focus()}
-			/>
-			<RadioGroup
-				ref={radioGroupRef}
-				className="flex flex-col gap-4"
-				value={control.value ?? ""}
-				onValueChange={control.change}
-				onBlur={control.blur}
-			>
-				{items.map((item) => {
-					return (
-						<div className="flex items-center gap-2" key={item}>
-							<RadioGroupItem value={item} id={`${meta.id}-${item}`} />
-							<Label htmlFor={`${meta.id}-${item}`}>
-								{item.slice(0, 1).toUpperCase() + item.slice(1)}
-							</Label>
-						</div>
-					)
-				})}
-			</RadioGroup>
-		</>
-	)
-}
-
-function RichTextField({
-	meta,
-}: {
-	meta: FieldMetadata<string>
-}) {
-	const control = useControl(meta)
-	const editor = useEditor()
-
-	return (
-		<>
-			<input
-				ref={control.register}
-				name={meta.name}
-				defaultValue={meta.initialValue}
-				aria-hidden
-				tabIndex={-1}
-				className="sr-only"
-				onFocus={() => editor.send({ type: "focus" })}
-			/>
-			<EditorEventListener
-				on={(event) => {
-					if (event.type === "mutation") {
-						control.change(JSON.stringify(event.value))
-					}
-					if (event.type === "blurred") {
-						control.blur()
-					}
-				}}
-			/>
-			<Toolbar />
-			<PortableTextEditable
-				className="min-h-48 rounded-b-md border border-input bg-background p-2 text-base text-foreground shadow-black/5 shadow-sm transition-shadow placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-				renderStyle={renderStyle}
-				renderDecorator={renderDecorator}
-				// renderAnnotation={renderAnnotation}
-				renderBlock={(props) => <div>{props.children}</div>}
-				renderListItem={(props) => <>{props.children}</>}
-			/>
-		</>
-	)
-}
-
-function MultipleSelectorField({
-	meta,
-	items,
-}: {
-	meta: FieldMetadata<string[] | string>
-	items: string[]
-}) {
-	const multipleSelectorRef =
-		useRef<ComponentRef<typeof MultipleSelector>>(null)
-	const control = useControl(meta)
-	const controlValue = (control.value as Array<string>) ?? []
-
-	return (
-		<>
-			<select
-				ref={control.register}
-				name={meta.name}
-				defaultValue={(meta.initialValue as Array<string>) ?? []}
-				multiple
-				aria-hidden
-				tabIndex={-1}
-				className="sr-only"
-				onFocus={() => multipleSelectorRef.current?.focus()}
-			>
-				<option value="" />
-				{items.map((option) => (
-					<option key={option} value={option} />
-				))}
-			</select>
-			<MultipleSelector
-				ref={multipleSelectorRef}
-				commandProps={{
-					label: "Select one or more",
-					className: "w-full md:max-w-sm",
-				}}
-				defaultOptions={items.map((item) => ({ value: item, label: item }))}
-				placeholder="Select one or more"
-				emptyIndicator={<p className="text-center text-sm">No results found</p>}
-				value={controlValue.map((item) => ({ value: item, label: item })) || []}
-				onChange={(event) =>
-					control.change(event.map((item) => item.value) || [])
-				}
-				hidePlaceholderWhenSelected
-				className="w-full md:max-w-sm"
-			/>
-		</>
 	)
 }
