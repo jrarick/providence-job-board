@@ -1,6 +1,8 @@
-import { Outlet, useRouteLoaderData } from "react-router"
+import { PlusIcon } from "lucide-react"
+import { Link, Outlet, useRouteLoaderData } from "react-router"
 import Container from "~/components/shell/container"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { buttonVariants } from "~/components/ui/button"
 import {
 	Card,
 	CardContent,
@@ -9,6 +11,12 @@ import {
 	CardTitle,
 } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "~/components/ui/tooltip"
 import type { RootLoader } from "~/root"
 import type { Route } from "./+types/job-seeker-profile"
 
@@ -111,7 +119,25 @@ export default function JobSeekerProfile({ actionData }: Route.ComponentProps) {
 							<Separator />
 
 							<section>
-								<h2 className="mb-2 font-semibold text-xl">Education</h2>
+								<div className="flex items-center justify-between">
+									<h2 className="mb-2 font-semibold text-xl">Education</h2>
+									<TooltipProvider delayDuration={0}>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Link
+													to="add-education"
+													className={buttonVariants({
+														variant: "ghost",
+														size: "icon",
+													})}
+												>
+													<PlusIcon className="h-6 w-6 text-primary" />
+												</Link>
+											</TooltipTrigger>
+											<TooltipContent>Add new education</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+								</div>
 								<div>
 									<h3 className="font-medium">BS in Computer Science</h3>
 									<p className="text-muted-foreground text-sm">

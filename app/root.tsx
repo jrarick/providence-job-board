@@ -196,13 +196,13 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 		<Container>
 			<main className="grid place-items-center p-12 px-6 lg:px-8">
 				<div className="text-center">
-					<p className="font-semibold text-base text-foreground">404</p>
+					<p className="font-semibold text-base text-foreground">{message}</p>
 					<h1 className="mt-4 text-balance font-display font-medium text-5xl text-foreground tracking-tight sm:text-7xl">
-						Page not found
+						{details}
 					</h1>
-					<p className="mt-6 max-w-lg text-pretty font-medium text-base text-gray-500 sm:text-lg/8">
-						Sorry, we couldn’t find the page you’re looking for. If you believe
-						this is an error, please contact support.
+					<p className="mx-auto mt-6 max-w-lg text-pretty font-medium text-base text-gray-500 sm:text-lg/8">
+						If you believe this is an application error an not a user error,
+						please contact support.
 					</p>
 					<div className="mt-10 flex flex-wrap items-center justify-center gap-6">
 						<Link to="/" className={buttonVariants({ variant: "default" })}>

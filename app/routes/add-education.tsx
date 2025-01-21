@@ -54,6 +54,24 @@ export async function action({ request }: Route.ActionArgs) {
 
 	const { supabase, headers } = createClient(request)
 
+	const {
+		data: { user },
+	} = await supabase.auth.getUser()
+
+	if (!user) {
+		throw new Error("User not authenticated")
+	}
+
+	const jobSeekerProfile = await supabase
+		.from("job_seeker_profiles")
+		.select("id")
+		.eq("profile_id", user.id)
+		.single()
+
+	if (jobSeekerProfile.error) {
+		throw new Error("Job seeker profile not found")
+	}
+
 	const { error, data } = await supabase.from("education_entries").insert([
 		{
 			institution: submission.value.institution,
@@ -62,6 +80,7 @@ export async function action({ request }: Route.ActionArgs) {
 			gpa: submission.value.gpa,
 			graduation_date: submission.value.graduationDate,
 			description: submission.value.description,
+			job_seeker_profile_id: jobSeekerProfile.data.id,
 		},
 	])
 
@@ -204,9 +223,9 @@ export default function AddEducation({ actionData }: Route.ComponentProps) {
 							</div>
 							<div
 								className="pl-1 text-destructive text-xs"
-								id={fields.graduationDate.errorId}
+								id={fields.description.errorId}
 							>
-								{fields.graduationDate.errors}
+								{fields.description.errors}
 							</div>
 						</div>
 						<Button type="submit" className="w-full" disabled={isSubmitting}>
