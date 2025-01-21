@@ -16,5 +16,7 @@ export default [
 	layout("layouts/privacy-policy.tsx", [
 		route("privacy-policy", "routes/privacy-policy.mdx"),
 	]),
-	route("job-seeker-profile", "routes/job-seeker-profile.tsx"),
+	route("job-seeker-profile", "routes/job-seeker-profile.tsx", [
+		route("add-education", "routes/add-education.tsx"),
+	]),
 ] satisfies RouteConfig

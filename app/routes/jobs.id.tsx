@@ -180,7 +180,7 @@ export default function JobsId({ loaderData }: Route.ComponentProps) {
 										))}
 									</dl>
 								</div>
-								<div className="col-span-5 max-h-[min(580px,70dvh)] overflow-y-auto">
+								<div className="col-span-5 max-h-[min(600px,75dvh)] overflow-y-auto">
 									<ScrollArea className="px-6 py-4">
 										<h2 className="mt-6 font-display font-medium text-3xl text-foreground">
 											Job Description
@@ -249,7 +249,7 @@ export default function JobsId({ loaderData }: Route.ComponentProps) {
 						{job.companyName}
 					</DrawerDescription>
 				</DrawerHeader>
-				<ScrollArea className="overflow-y-auto">
+				<ScrollArea>
 					<div className="p-4">
 						<h2 className="my-4 font-display font-medium text-2xl text-foreground">
 							Details
