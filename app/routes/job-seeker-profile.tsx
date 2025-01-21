@@ -167,7 +167,25 @@ export default function JobSeekerProfile({ actionData }: Route.ComponentProps) {
 							<Separator />
 
 							<section>
-								<h2 className="mb-2 font-semibold text-xl">Certifications</h2>
+								<div className="flex items-center justify-between">
+									<h2 className="mb-2 font-semibold text-xl">Certifications</h2>
+									<TooltipProvider delayDuration={0}>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Link
+													to="add-certification"
+													className={buttonVariants({
+														variant: "ghost",
+														size: "icon",
+													})}
+												>
+													<PlusIcon className="h-6 w-6 text-primary" />
+												</Link>
+											</TooltipTrigger>
+											<TooltipContent>Add new certification</TooltipContent>
+										</Tooltip>
+									</TooltipProvider>
+								</div>
 								<div>
 									<h3 className="font-medium">Data Science Bootcamp</h3>
 									<p className="text-muted-foreground text-sm">
