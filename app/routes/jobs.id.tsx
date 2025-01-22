@@ -10,7 +10,6 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { data, isRouteErrorResponse, useNavigate } from "react-router"
-import { ClientOnly } from "~/components/client-only"
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -39,6 +38,7 @@ import {
 	DrawerTitle,
 } from "~/components/ui/drawer"
 import { ScrollArea } from "~/components/ui/scroll-area"
+import { ClientOnly } from "~/components/utility/client-only"
 import { createClient } from "~/db/supabase.server"
 import { useMediaQuery } from "~/hooks/use-media-query"
 import { formatSalaryString } from "~/lib/utils"

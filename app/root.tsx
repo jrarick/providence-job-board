@@ -8,6 +8,7 @@ import {
 	ScrollRestoration,
 	data,
 	isRouteErrorResponse,
+	useLocation,
 	useRouteLoaderData,
 } from "react-router"
 import providenceIcon from "./assets/providence-icon.svg"
@@ -22,6 +23,7 @@ import {
 	SquareUserIcon,
 	UserPenIcon,
 } from "lucide-react"
+import { useEffect } from "react"
 import type { Route } from "./+types/root"
 import stylesheet from "./app.css?url"
 import Container from "./components/shell/container"
@@ -58,6 +60,32 @@ import { createClient } from "./db/supabase.server"
 import { useToast } from "./hooks/toaster"
 import { getToast } from "./lib/toast.server"
 import { combineHeaders } from "./lib/utils"
+
+const jobSeekerItems = [
+	{
+		title: "Browse Jobs",
+		url: "/jobs",
+		icon: BriefcaseIcon,
+	},
+	{
+		title: "Manage Job Seeker Profile",
+		url: "/job-seeker-profile",
+		icon: UserPenIcon,
+	},
+]
+
+const employerItems = [
+	{
+		title: "Post a Job",
+		url: "/post-a-job",
+		icon: PenLineIcon,
+	},
+	{
+		title: "Browse Job Seekers",
+		url: "/job-seekers",
+		icon: SquareUserIcon,
+	},
+]
 
 export const meta: Route.MetaFunction = () => {
 	return [
@@ -222,33 +250,13 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 }
 
 function AppSidebar({ user }: { user: User }) {
-	const jobSeekerItems = [
-		{
-			title: "Browse Jobs",
-			url: "/jobs",
-			icon: BriefcaseIcon,
-		},
-		{
-			title: "Manage Job Seeker Profile",
-			url: "/job-seeker-profile",
-			icon: UserPenIcon,
-		},
-	]
+	const { isMobile, setOpenMobile } = useSidebar()
+	const location = useLocation()
 
-	const employerItems = [
-		{
-			title: "Post a Job",
-			url: "/post-a-job",
-			icon: PenLineIcon,
-		},
-		{
-			title: "Browse Job Seekers",
-			url: "/job-seekers",
-			icon: SquareUserIcon,
-		},
-	]
-
-	const { isMobile } = useSidebar()
+	// biome-ignore lint/correctness/useExhaustiveDependencies: don't care
+	useEffect(() => {
+		setOpenMobile(false)
+	}, [location.key, setOpenMobile])
 
 	return (
 		<Sidebar collapsible="icon">

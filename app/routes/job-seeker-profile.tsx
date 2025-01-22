@@ -79,6 +79,8 @@ export default function JobSeekerProfile({ actionData }: Route.ComponentProps) {
 														variant: "ghost",
 														size: "icon",
 													})}
+													preventScrollReset
+													prefetch="intent"
 												>
 													<PlusIcon className="h-6 w-6 text-primary" />
 												</Link>
@@ -148,6 +150,8 @@ export default function JobSeekerProfile({ actionData }: Route.ComponentProps) {
 														variant: "ghost",
 														size: "icon",
 													})}
+													preventScrollReset
+													prefetch="intent"
 												>
 													<PlusIcon className="h-6 w-6 text-primary" />
 												</Link>
@@ -178,6 +182,8 @@ export default function JobSeekerProfile({ actionData }: Route.ComponentProps) {
 														variant: "ghost",
 														size: "icon",
 													})}
+													preventScrollReset
+													prefetch="intent"
 												>
 													<PlusIcon className="h-6 w-6 text-primary" />
 												</Link>
